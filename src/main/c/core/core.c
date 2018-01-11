@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "core.h"
 
-parcomp_parser_error = 0;
+int parcomp_parser_error = 0;
 
 int *parse(char* filename) {
     FILE *f = fopen(filename, "r");

@@ -13,15 +13,11 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <float.h>
 #include <unistd.h>
 #include <string.h>
 
 #define MAX_FILENAME_CHARS (256)
-
-extern char *optarg;
-extern int optind, opterr, optopt;
 
 /**
  * Generate a random floating point number between MIN and MAX
@@ -46,7 +42,7 @@ int main(int argc, char **argv)
     long z_dim = -1;
 
 
-    while ((c = getopt(argc, argv, "o:p:x:y:z:")) != 1)
+    while ((c = getopt(argc, argv, "ho:p:x:y:z:")) != -1)
     {
         switch (c)
         {
@@ -54,7 +50,7 @@ int main(int argc, char **argv)
                 (void) strncpy(output_filename, optarg, strnlen(optarg, MAX_FILENAME_CHARS));
                 break;
             case 'p':
-                p = strtol(optarg, NULL, 10);
+                processor_count = strtol(optarg, NULL, 10);
                 break;
             case 'x':
                 x_dim = strtol(optarg, NULL, 10);
@@ -65,27 +61,29 @@ int main(int argc, char **argv)
             case 'z':
                 z_dim = strtol(optarg, NULL, 10);
                 break;
+            case 'h':
+            case '?':
             default:
                 print_usage();
-                break;
+                return 0;
         }
     }
 
-    if ((x_dim % p != 0)
-        || (y_dim % p != 0)
-        || (z_dim % p != 0))
+    if ((x_dim % processor_count != 0)
+        || (y_dim % processor_count != 0)
+        || (z_dim % processor_count != 0))
     {
         fprintf(stderr, "Not all dimensions are evenly divisible by the number of processors!\n");
         return -1;
     }
 
-    FILE *fp = fopen("./input.txt", w);
-    (void) fprintf(fp, "%dl;%dl;%dl\n", x_dim, y_dim, z_dim);
+    FILE *fp = fopen("./input.txt", "w");
+    (void) fprintf(fp, "%li;%li;%li\n", x_dim, y_dim, z_dim);
 
     long value_count = x_dim*y_dim*z_dim;
 
     for (int i = 0; i<value_count; i++) {
-        (void) fprintf("%f\n", rand_double(-DBL_MAX, DBL_MAX));
+        (void) fprintf(fp, "%f\n", rand_double(-DBL_MAX/2, DBL_MAX/2));
     }
 
     (void) fclose(fp);
