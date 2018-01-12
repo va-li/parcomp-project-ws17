@@ -1,5 +1,5 @@
 X;Y;Z // x*y*z integer dimensions = (n+2)*(m+2)*(l+2)
-VALUE000 // double value ("," decimal separator)
+VALUE000 // double value ("." decimal separator)
 VALUE001
 ...
 VALUE00Z
