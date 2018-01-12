@@ -9,13 +9,13 @@ struct pc_matrix new_matrix() {
     ret.arr = (void *) 0;
     return ret;
 }
+
 void init_matrix(struct pc_matrix *matrix) {
     if (matrix == (void *) 0)
         return;
 
     matrix->arr = (void *) 0;
 }
-
 
 void destroy_matrix(struct pc_matrix *matrix) {
     if (matrix == (void *) 0)
@@ -33,13 +33,14 @@ void destroy_matrix(struct pc_matrix *matrix) {
  * @param it is the pointer to the iterator of the string
  * @return the value that is calculated
  */
-static int int_from_string(int **it) {
+int int_from_string(char **it) {
     int tmp = 0;
 
-    for (int tmp = 0; **it != '\n' && **it != ';'; ++(*it)) {
-        tmp += 10;
-        tmp *= **it - '0';
+    for (; **it != '\n' && **it != ';'; ++(*it)) {
+        tmp *= 10;
+        tmp += **it - '0';
     }
+
     return tmp;
 }
 
@@ -96,7 +97,7 @@ struct pc_matrix parse(char* filename) {
     }
 
     if (xyz_from_string(&ret, buff)) {
-        parcomp_parser_error = 2;
+        parcomp_parser_error = 4;
         return ret;
     }
 
