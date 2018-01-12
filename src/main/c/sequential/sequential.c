@@ -1,6 +1,5 @@
 #include <malloc.h>
 #include "sequential.h"
-#include "main/c/core/core.h"
 
 #define ELEMENT(ARR, X, Y) ((ARR)[(X)*(Y) + (X)])
 
@@ -10,7 +9,7 @@ void run_stencil_7(struct pc_matrix *matrix) {
 
     for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
 
-        for (int k = 1; k < matrix->z-1; --k) {
+        for (int k = 1; k < matrix->z-1; ++k) {
 
             double* prev = matrix->arr[k - 1];
             double* curr = matrix->arr[k];
@@ -53,7 +52,7 @@ void run_stencil_27(struct pc_matrix *matrix) {
 
     for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
 
-        for (int k = 1; k < matrix->z-1; --k) {
+        for (int k = 1; k < matrix->z-1; ++k) {
 
             double* prev = matrix->arr[k - 1];
             double* curr = matrix->arr[k];

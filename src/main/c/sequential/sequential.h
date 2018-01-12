@@ -1,6 +1,8 @@
 #ifndef PARCOMP_PROJECT_WS17_SEQUENTIAL_H
 #define PARCOMP_PROJECT_WS17_SEQUENTIAL_H
 
+#include "main/c/core/core.h"
+
 /**
  * Number of times a stencil is applied to the matrix
  */
