@@ -4,9 +4,9 @@
 
 int main() {
     printf("Implement me!\n");
-    int *array = parse("incorrect file");
+    struct pc_matrix matrix = parse("incorrect file");
 
-    if (array == (void *) 0) {
+    if (parcomp_parser_error != 0) {
         printf("Parser works correctly with non-existing files!\n");
     }
     return 0;
