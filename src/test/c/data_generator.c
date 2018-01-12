@@ -35,8 +35,7 @@ static void print_usage();
 
 static void init_rand();
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int c;
     char *output_filename = "input.txt";
     long processor_count = 48;
@@ -45,10 +44,8 @@ int main(int argc, char **argv)
     long z_dim = -1;
 
 
-    while ((c = getopt(argc, argv, "ho:p:x:y:z:")) != -1)
-    {
-        switch (c)
-        {
+    while ((c = getopt(argc, argv, "ho:p:x:y:z:")) != -1) {
+        switch (c) {
             case 'o':
                 (void) strncpy(output_filename, optarg, strnlen(optarg, MAX_FILENAME_CHARS));
                 break;
@@ -74,8 +71,7 @@ int main(int argc, char **argv)
 
     if ((x_dim % processor_count != 0)
         || (y_dim % processor_count != 0)
-        || (z_dim % processor_count != 0))
-    {
+        || (z_dim % processor_count != 0)) {
         fprintf(stderr, "Not all dimensions are evenly divisible by the number of processors!\n");
         return -1;
     }
@@ -83,11 +79,11 @@ int main(int argc, char **argv)
     FILE *fp = fopen("./input.txt", "w");
     (void) fprintf(fp, "%li;%li;%li\n", x_dim, y_dim, z_dim);
 
-    long value_count = x_dim*y_dim*z_dim;
+    long value_count = x_dim * y_dim * z_dim;
 
     init_rand();
 
-    for (int i = 0; i<value_count; i++) {
+    for (int i = 0; i < value_count; i++) {
         (void) fprintf(fp, "%f\n", rand_double(-1.0, 1));
     }
 
@@ -96,15 +92,13 @@ int main(int argc, char **argv)
     return 0;
 }
 
-static double rand_double(double min, double max)
-{
+static double rand_double(double min, double max) {
     double range = (max - min);
     double div = RAND_MAX / range;
     return min + (rand() / div);
 }
 
-static void print_usage()
-{
+static void print_usage() {
     (void) printf("Usage: data_generator [-h | -p <processor count> | -o <filename>] -x <X> -y <Y> -z <Z>");
 }
 
