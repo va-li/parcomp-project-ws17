@@ -2,7 +2,6 @@
 #include "sequential.h"
 #include "main/c/core/core.h"
 
-#define ITERATION_COUNT (100)
 #define ELEMENT(ARR, X, Y) ((ARR)[(X)*(Y) + (X)])
 
 void run_stencil_7(struct pc_matrix *matrix) {
