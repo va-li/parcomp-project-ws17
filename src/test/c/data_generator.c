@@ -6,9 +6,9 @@
  * Options:
  *  - h : Help
  *  - o <filename> : name of the output file
- *  - x <X> : value of X dimension
- *  - y <Y> : value of Y dimension
- *  - z <Z> : value of Z dimension
+ *  - n <X> : value of N dimension
+ *  - m <Y> : value of M dimension
+ *  - l <Z> : value of L dimension
  *  - p <processor count> : (Default 48) Must fulfill (X-2)*(Y-2)*(Z-2) % <processor count> = 0
  */
 #include <stdio.h>
@@ -39,9 +39,9 @@ int main(int argc, char **argv) {
     int c;
     char *output_filename = "input.txt";
     long processor_count = 48;
-    long x_dim = -1;
-    long y_dim = -1;
-    long z_dim = -1;
+    long n_dim = -1;
+    long m_dim = -1;
+    long l_dim = -1;
 
 
     while ((c = getopt(argc, argv, "ho:p:x:y:z:")) != -1) {
@@ -53,13 +53,13 @@ int main(int argc, char **argv) {
                 processor_count = strtol(optarg, NULL, 10);
                 break;
             case 'x':
-                x_dim = strtol(optarg, NULL, 10);
+                n_dim = strtol(optarg, NULL, 10);
                 break;
             case 'y':
-                y_dim = strtol(optarg, NULL, 10);
+                m_dim = strtol(optarg, NULL, 10);
                 break;
             case 'z':
-                z_dim = strtol(optarg, NULL, 10);
+                l_dim = strtol(optarg, NULL, 10);
                 break;
             case 'h':
             case '?':
@@ -69,17 +69,17 @@ int main(int argc, char **argv) {
         }
     }
 
-    if ((x_dim % processor_count != 0)
-        || (y_dim % processor_count != 0)
-        || (z_dim % processor_count != 0)) {
+    if (((n_dim+2) % processor_count != 0)
+        || ((m_dim+2)% processor_count != 0)
+        || ((l_dim+2) % processor_count != 0)) {
         fprintf(stderr, "Not all dimensions are evenly divisible by the number of processors!\n");
         return -1;
     }
 
     FILE *fp = fopen("./input.txt", "w");
-    (void) fprintf(fp, "%li;%li;%li\n", x_dim, y_dim, z_dim);
+    (void) fprintf(fp, "%li;%li;%li\n", n_dim+2, m_dim+2, l_dim+2);
 
-    long value_count = x_dim * y_dim * z_dim;
+    long value_count = n_dim+2 * m_dim+2 * l_dim+2;
 
     init_rand();
 
@@ -99,7 +99,7 @@ static double rand_double(double min, double max) {
 }
 
 static void print_usage() {
-    (void) printf("Usage: data_generator [-h | -p <processor count> | -o <filename>] -x <X> -y <Y> -z <Z>");
+    (void) printf("Usage: data_generator [-h | -p <processor count> | -o <filename>] -n <N> -m <M> -l <L>");
 }
 
 static void init_rand() {
