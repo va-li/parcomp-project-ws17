@@ -6,10 +6,10 @@
  * Options:
  *  - h : Help
  *  - o <filename> : name of the output file
- *  - n <X> : value of N dimension
- *  - m <Y> : value of M dimension
- *  - l <Z> : value of L dimension
- *  - p <processor count> : (Default 48) Must fulfill (X-2)*(Y-2)*(Z-2) % <processor count> = 0
+ *  - n <N> : value of N dimension
+ *  - m <M> : value of M dimension
+ *  - l <L> : value of L dimension
+ *  - p <processor count> : (Default 48) Must fulfill N*M*L % <processor count> = 0
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
     long z_dim = l_dim + 2;
 
     if ((x_dim % processor_count != 0)
-        || (y_dim% processor_count != 0)
+        || (y_dim % processor_count != 0)
         || (z_dim % processor_count != 0)) {
         fprintf(stderr, "Not all dimensions are evenly divisible by the number of processors!\n");
         return -1;
@@ -103,7 +103,7 @@ static double rand_double(double min, double max) {
 }
 
 static void print_usage() {
-    (void) printf("Usage: data_generator [-h | -p <processor count> | -o <filename>] -n <N> -m <M> -l <L>");
+    (void) printf("Usage: data-generator [-h | -p <processor count> | -o <filename>] -n <N> -m <M> -l <L>");
 }
 
 static void init_rand() {
