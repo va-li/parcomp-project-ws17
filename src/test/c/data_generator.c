@@ -69,17 +69,21 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (((n_dim+2) % processor_count != 0)
-        || ((m_dim+2)% processor_count != 0)
-        || ((l_dim+2) % processor_count != 0)) {
+    long x_dim = n_dim + 2;
+    long y_dim = m_dim + 2;
+    long z_dim = l_dim + 2;
+
+    if ((x_dim % processor_count != 0)
+        || (y_dim% processor_count != 0)
+        || (z_dim % processor_count != 0)) {
         fprintf(stderr, "Not all dimensions are evenly divisible by the number of processors!\n");
         return -1;
     }
 
     FILE *fp = fopen("./input.txt", "w");
-    (void) fprintf(fp, "%li;%li;%li\n", n_dim+2, m_dim+2, l_dim+2);
+    (void) fprintf(fp, "%li;%li;%li\n", x_dim, y_dim, y_dim);
 
-    long value_count = n_dim+2 * m_dim+2 * l_dim+2;
+    long value_count = x_dim * y_dim * z_dim;
 
     init_rand();
 
