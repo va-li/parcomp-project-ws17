@@ -1,60 +1,102 @@
+#include <malloc.h>
 #include "sequential.h"
 #include "main/c/core/core.h"
 
+#define ITERATION_COUNT (100)
 #define ELEMENT(ARR, X, Y) ((ARR)[(X)*(Y) + (X)])
 
-void stencil_plane_7(struct pc_matrix *matrix, double *buffer_plane, int z) {
-    double* prev = matrix->arr[z - 1];
-    double* curr = matrix->arr[z];
-    double* futu = matrix->arr[z + 1];
+void run_stencil_7(struct pc_matrix *matrix) {
+    double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
+    double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
 
-    for (int i = 1; i < matrix->x-1; ++i) {
-        for (int j = 1; j < matrix->y; ++j) {
-            double tmp = ELEMENT(curr, i, j);
-            tmp += ELEMENT(curr, i, j + 1);
-            tmp += ELEMENT(curr, i, j - 1);
-            tmp += ELEMENT(curr, i + 1, j);
-            tmp += ELEMENT(curr, i - 1, j);
-            tmp += ELEMENT(prev, i, j);
-            tmp += ELEMENT(futu, i, j);
-            tmp /= 7;
-            ELEMENT(buffer_plane, i, j) = tmp;
+    for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
+
+        for (int k = 1; k < matrix->z-1; --k) {
+
+            double* prev = matrix->arr[k - 1];
+            double* curr = matrix->arr[k];
+            double* futu = matrix->arr[k + 1];
+
+            for (int i = 1; i < matrix->x-1; ++i) {
+
+                for (int j = 1; j < matrix->y; ++j) {
+
+                    double tmp = ELEMENT(curr, i, j);
+                    tmp += ELEMENT(curr, i, j + 1);
+                    tmp += ELEMENT(curr, i, j - 1);
+                    tmp += ELEMENT(curr, i + 1, j);
+                    tmp += ELEMENT(curr, i - 1, j);
+                    tmp += ELEMENT(prev, i, j);
+                    tmp += ELEMENT(futu, i, j);
+                    tmp /= 7;
+                    ELEMENT(calc_buff, i, j) = tmp;
+                }
+            }
+
+            double *tmp = calc_buff;
+            calc_buff = prev;
+            matrix->arr[k - 1] = updt_buff;
+            updt_buff = tmp;
         }
+
+        double *tmp = matrix->arr[matrix->z-1];
+        matrix->arr[matrix->z-1] = updt_buff;
+        updt_buff = tmp;
     }
+
+    free(updt_buff);
+    free(calc_buff);
 }
 
-void stencil_plane_27(struct pc_matrix *matrix, double *buffer_plane, int z) {
-    double* prev = matrix->arr[z - 1];
-    double* curr = matrix->arr[z];
-    double* futu = matrix->arr[z + 1];
+void run_stencil_27(struct pc_matrix *matrix) {
+    double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
+    double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
 
-    for (int i = 1; i < matrix->x-1; ++i) {
-        for (int j = 1; j < matrix->y; ++j) {
-            double tmp = 0;
-            for (int a = -1; a < 2; ++a) {
-                for (int b = -1; b < 2; ++b) {
-                    tmp += ELEMENT(prev, i+a, j+b);
+    for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
+
+        for (int k = 1; k < matrix->z-1; --k) {
+
+            double* prev = matrix->arr[k - 1];
+            double* curr = matrix->arr[k];
+            double* futu = matrix->arr[k + 1];
+
+            for (int i = 1; i < matrix->x-1; ++i) {
+                for (int j = 1; j < matrix->y; ++j) {
+                    double tmp = 0;
+                    for (int a = -1; a < 2; ++a) {
+                        for (int b = -1; b < 2; ++b) {
+                            tmp += ELEMENT(prev, i+a, j+b);
+                        }
+                    }
+
+                    for (int a = -1; a < 2; ++a) {
+                        for (int b = -1; b < 2; ++b) {
+                            tmp += ELEMENT(curr, i+a, j+b);
+                        }
+                    }
+
+                    for (int a = -1; a < 2; ++a) {
+                        for (int b = -1; b < 2; ++b) {
+                            tmp += ELEMENT(futu, i+a, j+b);
+                        }
+                    }
+
+                    tmp /= 27;
+                    ELEMENT(calc_buff, i, j) = tmp;
                 }
             }
 
-            for (int a = -1; a < 2; ++a) {
-                for (int b = -1; b < 2; ++b) {
-                    tmp += ELEMENT(curr, i+a, j+b);
-                }
-            }
-
-            for (int a = -1; a < 2; ++a) {
-                for (int b = -1; b < 2; ++b) {
-                    tmp += ELEMENT(futu, i+a, j+b);
-                }
-            }
-
-            tmp /= 27;
-            ELEMENT(buffer_plane, i, j) = tmp;
+            double *tmp = calc_buff;
+            calc_buff = prev;
+            matrix->arr[k - 1] = updt_buff;
+            updt_buff = tmp;
         }
-    }
-}
 
-void run_stencil(struct pc_matrix *matrix) {
-    // MAKE SURE YOU START FROM 1 and end to N-1
+        double *tmp = matrix->arr[matrix->z-1];
+        matrix->arr[matrix->z-1] = updt_buff;
+        updt_buff = tmp;
+    }
+
+    free(updt_buff);
+    free(calc_buff);
 }
