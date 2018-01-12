@@ -16,6 +16,7 @@
 #include <float.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 
 #define MAX_FILENAME_CHARS (256)
 
@@ -31,6 +32,8 @@ static double rand_double(double min, double max);
  * Print the usage message
  */
 static void print_usage();
+
+static void init_rand();
 
 int main(int argc, char **argv)
 {
@@ -82,8 +85,10 @@ int main(int argc, char **argv)
 
     long value_count = x_dim*y_dim*z_dim;
 
+    init_rand();
+
     for (int i = 0; i<value_count; i++) {
-        (void) fprintf(fp, "%f\n", rand_double(-DBL_MAX/2, DBL_MAX/2));
+        (void) fprintf(fp, "%f\n", rand_double(-1.0, 1));
     }
 
     (void) fclose(fp);
@@ -101,4 +106,8 @@ static double rand_double(double min, double max)
 static void print_usage()
 {
     (void) printf("Usage: data_generator [-h | -p <processor count> | -o <filename>] -x <X> -y <Y> -z <Z>");
+}
+
+static void init_rand() {
+    srand(time(NULL));
 }
