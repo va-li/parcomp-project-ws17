@@ -2,7 +2,7 @@
 #define PARCOMP_PROJECT_WS17_CORE_H
 
 struct pc_matrix {
-    double *arr;
+    double **arr;
     int x;
     int y;
     int z;
@@ -11,12 +11,22 @@ struct pc_matrix {
 #define PARSER_BUFFER_SIZE 256
 
 // Given a pointer of an array `arr` it returns the pointer of the element in <x,y,z>
-#define GET_PTR(arr, x, y, z)  (arr + x * (y * (z + 1) + 1))
+#define GET_PTR(arr, x, y, z)  (arr[z] + x * (y + 1))
 
 int parcomp_parser_error;
 
+/**
+ * Sets the value of the array to a null pointer for safety
+ *
+ * @param matrix the matrix that holds the array
+ */
 void init_matrix(struct pc_matrix *matrix);
 
+/**
+ * If the array pointer is not set to null, it frees the memory and sets it tu null
+ *
+ * @param matrix the matrix that holds the array
+ */
 void destroy_matrix(struct pc_matrix *matrix);
 
 /**

@@ -1,14 +1,9 @@
 #include <stdio.h>
 #include <malloc.h>
+#include <stdlib.h>
 #include "core.h"
 
 int parcomp_parser_error = 0;
-
-struct pc_matrix new_matrix() {
-    struct pc_matrix ret;
-    ret.arr = (void *) 0;
-    return ret;
-}
 
 void init_matrix(struct pc_matrix *matrix) {
     if (matrix == (void *) 0)
@@ -17,14 +12,29 @@ void init_matrix(struct pc_matrix *matrix) {
     matrix->arr = (void *) 0;
 }
 
+void alloc_matrix(struct pc_matrix *matrix) {
+    matrix->arr = malloc(matrix->z * sizeof(double *));
+
+    for (int i = 0; i < matrix->z; ++i) {
+        matrix->arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
+    }
+}
+
 void destroy_matrix(struct pc_matrix *matrix) {
     if (matrix == (void *) 0)
         return;
 
-    if (matrix->arr != (void *) 0) {
-        free(matrix->arr);
-        matrix->arr = (void *) 0;
+    if (matrix->arr == (void *) 0)
+        return;
+
+    for (int i = 0; i < matrix->z; ++i) {
+        if (matrix->arr[i] == (void *) 0)
+            continue;
+        free(matrix->arr[i]);
     }
+
+    free(matrix->arr);
+    matrix->arr = (void *) 0;
 }
 
 /**
@@ -36,9 +46,10 @@ void destroy_matrix(struct pc_matrix *matrix) {
 int int_from_string(char **it) {
     int tmp = 0;
 
-    for (; **it != '\n' && **it != ';'; ++(*it)) {
+    while (**it != '\n' && **it != ';') {
         tmp *= 10;
         tmp += **it - '0';
+        ++(*it);
     }
 
     return tmp;
@@ -101,11 +112,15 @@ struct pc_matrix parse(char* filename) {
         return ret;
     }
 
-    ret.arr = malloc(ret.x * ret.y * ret.z * sizeof(double));
+    alloc_matrix(&ret);
+
     int i;
+    char *ignore;
+
+    int plane_size = ret.x * ret.y;
 
     for (i = 0; fgets(buff, PARSER_BUFFER_SIZE, f) != NULL; i++) {
-        sscanf(buff, "%lf", &ret.arr[i]);
+        ret.arr[i / plane_size][i % plane_size] = strtod(buff, &ignore);
     }
 
     if (i != ret.x * ret.y * ret.z) {
