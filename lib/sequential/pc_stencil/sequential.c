@@ -46,17 +46,7 @@ void run_naive_stencil_27(struct pc_matrix *org_matrix, struct pc_matrix *tmp_ma
                     for (int a = -1; a < 2; ++a) {
                         for (int b = -1; b < 2; ++b) {
                             tmp += ELEMENT(org_matrix->arr[k - 1], i+a, j+b);
-                        }
-                    }
-
-                    for (int a = -1; a < 2; ++a) {
-                        for (int b = -1; b < 2; ++b) {
                             tmp += ELEMENT(org_matrix->arr[k], i+a, j+b);
-                        }
-                    }
-
-                    for (int a = -1; a < 2; ++a) {
-                        for (int b = -1; b < 2; ++b) {
                             tmp += ELEMENT(org_matrix->arr[k + 1], i+a, j+b);
                         }
                     }
@@ -167,17 +157,7 @@ void run_stencil_27(struct pc_matrix *matrix) {
                     for (int a = -1; a < 2; ++a) {
                         for (int b = -1; b < 2; ++b) {
                             tmp += ELEMENT(prev, i + a, j + b);
-                        }
-                    }
-
-                    for (int a = -1; a < 2; ++a) {
-                        for (int b = -1; b < 2; ++b) {
                             tmp += ELEMENT(curr, i + a, j + b);
-                        }
-                    }
-
-                    for (int a = -1; a < 2; ++a) {
-                        for (int b = -1; b < 2; ++b) {
                             tmp += ELEMENT(futu, i + a, j + b);
                         }
                     }
