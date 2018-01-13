@@ -10,13 +10,21 @@
 
 /**
  *
- * @param src_matrix
- * @param dest_matrix
+ * @param org_matrix
+ * @param tmp_matrix
  */
-void run_naive_stencil_7(struct pc_matrix *src_matrix, struct pc_matrix *dest_matrix);
+void run_naive_stencil_7(struct pc_matrix *org_matrix, struct pc_matrix *tmp_matrix);
+
+/**
+ *
+ * @param org_matrix
+ * @param tmp_matrix
+ */
+void run_naive_stencil_27(struct pc_matrix *org_matrix, struct pc_matrix *tmp_matrix);
 
 /**
  * Applies the 7-stencil to <matrix> ITERATOR_COUNT times
+ * Thi
  * @param matrix
  */
 void run_stencil_7(struct pc_matrix *matrix);
