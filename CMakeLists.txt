@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(parcomp-project-ws17)
+project(parcomp-project-ws17 C)
 
 set(CMAKE_C_STANDARD 11)
 

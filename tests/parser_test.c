@@ -116,9 +116,9 @@ void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals) {
             }
         }
     } else {
-        for (int k = 1; k < matrix->z; k++) {
-            for (int i = 1; i < matrix->x - 1; ++i) {
-                for (int j = 1; j < matrix->y - 1; ++j) {
+        for (int k = 1; k < matrix->z - 1; k++) {
+            for (int j = 1; j < matrix->y - 1; ++j) {
+                for (int i = 1; i < matrix->x - 1; ++i) {
                     printf("%f\n", matrix->arr[k][i * j + i]);
                 }
             }
