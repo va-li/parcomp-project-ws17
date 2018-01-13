@@ -50,6 +50,10 @@ int main(int argc, char **argv) {
 
     struct pc_matrix matrix = parse(input_filename);
 
+    if (!equal_matrix(&matrix, &matrix)) {
+        printf("Compare function doesn't work with the same matrix.");
+    }
+
     switch (parcomp_parser_error) {
         case 1:
             printf("Error: can't open the file.\n");

@@ -55,6 +55,24 @@ int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest) {
     return 0;
 }
 
+int equal_matrix(struct pc_matrix *a, struct pc_matrix *b) {
+    if ((a->x != b->x)
+        || (a->y != b->y)
+        ||(a->z != b->z)) {
+        return 0;
+    }
+
+    int ret = 1;
+
+    for (int k = 0; k < a->z; ++k) {
+        for (int ij = 0; ij < a->x*a->y; ++ij) {
+            if (a->arr[k][ij] != b->arr[k][ij]) ret = 0;
+        }
+    }
+
+    return ret;
+}
+
 /**
  * Reads a number from a string until the next character is ';' or '\n'
  *

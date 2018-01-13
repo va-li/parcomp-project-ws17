@@ -44,6 +44,14 @@ void alloc_matrix(struct pc_matrix *matrix);
 int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest);
 
 /**
+ * Check two matrices if they have equal values
+ * @param a
+ * @param b
+ * @return 1 if they are equal, 0 otherwise
+ */
+int equal_matrix(struct pc_matrix *a, struct pc_matrix *b);
+
+/**
  * This parses the file with the filename and returns the parsed array
  *
  * IF THERE'S AN ERROR DURING PARSING, `parcomp_parser_error` will be set to the corresponding values
