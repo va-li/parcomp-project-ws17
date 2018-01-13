@@ -4,11 +4,6 @@
 #include "pc_stencil/core.h"
 
 /**
- * Number of times a stencil is applied to the matrix
- */
-#define ITERATION_COUNT (100)
-
-/**
  *
  * @param org_matrix
  * @param tmp_matrix

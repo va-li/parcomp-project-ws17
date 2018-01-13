@@ -5,6 +5,7 @@
 
 #include "pc_stencil/core.h"
 #include "pc_stencil/sequential.h"
+#include "pc_stencil/openmp.h"
 
 #define MAX_FILENAME_CHARS (256)
 
@@ -93,6 +94,7 @@ int main(int argc, char **argv) {
             sequential_mode(&matrix, stencil_mode);
             break;
         case PARALLEL:
+            parallel_mode(&matrix, stencil_mode);
             break;
     }
 
@@ -125,6 +127,15 @@ void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
 
     destroy_matrix(&output_matrix);
 }
+
+void parallel_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
+    if (stencil_mode == STENCIL_7) {
+        run_openmp_stencil_7(matrix);
+    } else if (stencil_mode == STENCIL_27) {
+        run_openmp_stencil_27(matrix);
+    }
+}
+
 
 void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
     if (stencil_mode == STENCIL_7) {

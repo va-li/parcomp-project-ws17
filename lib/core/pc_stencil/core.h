@@ -8,10 +8,16 @@ struct pc_matrix {
     int z;
 };
 
-#define PARSER_BUFFER_SIZE 256
+/**
+ * Number of times a stencil is applied to the matrix
+ */
+#define ITERATION_COUNT (100)
 
-// Given a pointer of an array `arr` it returns the pointer of the element in <x,y,z>
-#define GET_PTR(arr, x, y, z)  (arr[z] + x * (y + 1))
+#define NUM_THREADS 4
+
+#define ELEMENT(ARR, X, Y) ((ARR)[(X)*(Y) + (X)])
+
+#define PARSER_BUFFER_SIZE 256
 
 int parcomp_parser_error;
 

@@ -1,8 +1,6 @@
 #include <malloc.h>
 #include "sequential.h"
 
-#define ELEMENT(ARR, X, Y) ((ARR)[(X)*(Y) + (X)])
-
 void run_naive_stencil_7(struct pc_matrix *org_matrix, struct pc_matrix *tmp_matrix) {
     // Necessary to copy the boundary values into DEST_MATRIX
     copy_matrix(org_matrix, tmp_matrix);
