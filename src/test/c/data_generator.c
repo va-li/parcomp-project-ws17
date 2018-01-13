@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     long l_dim = -1;
 
 
-    while ((c = getopt(argc, argv, "ho:p:x:y:z:")) != -1) {
+    while ((c = getopt(argc, argv, "ho:p:n:m:l:")) != -1) {
         switch (c) {
             case 'o':
                 (void) strncpy(output_filename, optarg, strnlen(optarg, MAX_FILENAME_CHARS));
@@ -52,13 +52,13 @@ int main(int argc, char **argv) {
             case 'p':
                 processor_count = strtol(optarg, NULL, 10);
                 break;
-            case 'x':
+            case 'n':
                 n_dim = strtol(optarg, NULL, 10);
                 break;
-            case 'y':
+            case 'm':
                 m_dim = strtol(optarg, NULL, 10);
                 break;
-            case 'z':
+            case 'l':
                 l_dim = strtol(optarg, NULL, 10);
                 break;
             case 'h':
@@ -73,9 +73,9 @@ int main(int argc, char **argv) {
     long y_dim = m_dim + 2;
     long z_dim = l_dim + 2;
 
-    if ((x_dim % processor_count != 0)
-        || (y_dim % processor_count != 0)
-        || (z_dim % processor_count != 0)) {
+    if ((n_dim % processor_count != 0)
+        || (m_dim % processor_count != 0)
+        || (l_dim % processor_count != 0)) {
         fprintf(stderr, "Not all dimensions are evenly divisible by the number of processors!\n");
         return -1;
     }
