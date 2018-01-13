@@ -37,6 +37,24 @@ void destroy_matrix(struct pc_matrix *matrix) {
     matrix->arr = (void *) 0;
 }
 
+int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest) {
+    if ((src->x != dest->x)
+        || (src->y != dest->y)
+        ||(src->z != dest->z)) {
+        return -1;
+    }
+
+    for (int i = 0; i < src->x; ++i) {
+        for (int j = 0; j < src->y; ++j) {
+            for (int k = 0; k < src->z; ++k) {
+                dest->arr[k][i*j + i] = src->arr[k][i*j + i];
+            }
+        }
+    }
+
+    return 0;
+}
+
 /**
  * Reads a number from a string until the next character is ';' or '\n'
  *

@@ -76,27 +76,37 @@ def calc_one_stencil_7(org, copy, i, j, k):
     copy[k][j][i] += org[k-1][j][i]
     copy[k][j][i] /= 7
 
-def copy_all(org, copy):
+def copy_all(src, dest):
     for i in range(0, x):
         for j in range(0, y):
             for k in range(0, z):
-                copy[i][j][k] = org[i][j][k]
+                dest[i][j][k] = src[i][j][k]
 
 def stencil_calculate(org, copy, func):
-    for i in range(1, x-1):
-        for j in range(1, y-1):
-            for k in range(1, z-1):
-                func(org, copy, k, j, i)
+    for k in range(1, z-1):
+        # Copy boundary values
+        #for i in range(0, x):
+        #   copy[k][0][i] = org[k][0][i]
+
+        #for j in range(0, y):
+        #    copy[k][j][0] = org[k][j][0]
+
+        # Perform stencil update
+        for i in range(1, x-1):
+            for j in range(1, y-1):
+                    func(org, copy, k, j, i)
     copy_all(copy, org)
+
 
 stencil_seven = deepcopy(arr)
 stencil_twentyseven = deepcopy(arr)
+
 
 def print_mat(mat):
     for i in range(0, x):
         for j in range(0, y):
             for k in range(0, z):
-                print("{:.3f}".format(mat[i][j][k]))
+                print("{:f}".format(mat[i][j][k]))
 
 temp_arr = deepcopy(arr)
 for i in range(0, 100):

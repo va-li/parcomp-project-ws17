@@ -30,6 +30,20 @@ void init_matrix(struct pc_matrix *matrix);
 void destroy_matrix(struct pc_matrix *matrix);
 
 /**
+ * TODO
+ * @param matrix
+ */
+void alloc_matrix(struct pc_matrix *matrix);
+
+/**
+ * Copy values from matrix SRC to matrix DEST. Both matrices are expected to be allocated before passing.
+ * @param src matrix to copy from
+ * @param dest matrix to copy to
+ * @return 0 if the values were copied, -1 if the dimensions of SRC and DEST matrix did not match
+ */
+int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest);
+
+/**
  * This parses the file with the filename and returns the parsed array
  *
  * IF THERE'S AN ERROR DURING PARSING, `parcomp_parser_error` will be set to the corresponding values

@@ -13,20 +13,13 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <float.h>
-#include <unistd.h>
+#include <getopt.h>
 #include <string.h>
 #include <time.h>
 
 #define MAX_FILENAME_CHARS (256)
 
-/**
- * Generate a random floating point number between MIN and MAX
- * @param min
- * @param max
- * @return
- */
-static double rand_double(double min, double max);
+static long rand_long(long max);
 
 /**
  * Print the usage message
@@ -88,7 +81,8 @@ int main(int argc, char **argv) {
     init_rand();
 
     for (int i = 0; i < value_count; i++) {
-        (void) fprintf(fp, "%f\n", rand_double(-1.0, 1));
+        long rnd = rand_long(RAND_MAX) - (RAND_MAX / 2);
+        (void) fprintf(fp, "%ld\n", rnd);
     }
 
     (void) fclose(fp);
@@ -96,10 +90,30 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-static double rand_double(double min, double max) {
+/*static double rand_double(double min, double max) {
     double range = (max - min);
     double div = RAND_MAX / range;
     return min + (rand() / div);
+}*/
+
+/**
+ * https://stackoverflow.com/questions/2509679/how-to-generate-a-random-number-from-within-a-range
+ * @param max
+ * @return
+ */
+static long rand_long(long max) {
+    unsigned long
+            num_bins = (unsigned long) max + 1,
+            num_rand = (unsigned long) RAND_MAX + 1,
+            bin_size = num_rand / num_bins,
+            defect = num_rand % num_bins;
+
+    long x;
+    do {
+        x = rand();
+    } while (num_rand - defect <= (unsigned long) x);
+
+    return x / bin_size;
 }
 
 static void print_usage() {
