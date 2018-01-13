@@ -22,11 +22,14 @@ void print_usage();
 int main(int argc, char **argv) {
     int c;
     char *input_filename = "input.txt";
-    bool debug = false;
+    bool debug = false, print = true;
     enum MODE mode = NAIVE;
 
-    while ((c = getopt(argc, argv, "dhi:m:")) != -1) {
+    while ((c = getopt(argc, argv, "sdhi:m:")) != -1) {
         switch (c) {
+            case 's':
+                print = false;
+                break;
             case 'd':
                 debug = true;
                 break;
@@ -82,7 +85,8 @@ int main(int argc, char **argv) {
             break;
     }
 
-    print_matrix(&matrix, false);
+    if (print)
+        print_matrix(&matrix, false);
 
     destroy_matrix(&matrix);
 

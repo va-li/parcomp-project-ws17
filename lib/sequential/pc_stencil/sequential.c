@@ -93,13 +93,11 @@ void run_stencil_7(struct pc_matrix *matrix) {
             for (int i = 0; i < matrix->x; ++i) {
                 ELEMENT(calc_buff, i, 0) = ELEMENT(curr, i, 0);
                 ELEMENT(calc_buff, i, matrix->y-1) = ELEMENT(curr, i, matrix->y-1);
-                //ELEMENT(calc_buff, (matrix->x) - 1 - i, 0) = ELEMENT(curr, (matrix->x) - 1 - i, 0);
             }
 
             for (int j = 0; j < matrix->y; ++j) {
                 ELEMENT(calc_buff, 0, j) = ELEMENT(curr, 0, j);
                 ELEMENT(calc_buff, matrix->x-1, j) = ELEMENT(curr, matrix->x-1, j);
-                //ELEMENT(calc_buff, 0, (matrix->y) - 1 - j) = ELEMENT(curr, 0, (matrix->y) - 1 - j);
             }
 
             for (int i = 1; i < matrix->x - 1; ++i) {
