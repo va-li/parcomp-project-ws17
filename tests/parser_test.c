@@ -6,13 +6,16 @@
 #include "pc_stencil/core.h"
 #include "pc_stencil/sequential.h"
 #include "pc_stencil/openmp.h"
+#include "pc_stencil/cilk_stencil.h"
 
 #define MAX_FILENAME_CHARS (256)
 
 enum PROC_MODE {
     NAIVE = 0,
     SEQUENTIAL,
-    PARALLEL
+    OPENMP,
+    CILK,
+    MPI
 };
 
 enum STENCIL_MODE {
@@ -22,7 +25,8 @@ enum STENCIL_MODE {
 
 void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
-void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals);
+void openmp_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode);
+void cilk_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode);
 void print_usage();
 
 int main(int argc, char **argv) {
@@ -43,7 +47,7 @@ int main(int argc, char **argv) {
             case 'p':
                 proc_mode = (enum PROC_MODE) strtol(optarg, NULL, 10);
                 if (proc_mode < NAIVE
-                    || proc_mode > PARALLEL) {
+                    || proc_mode > MPI) {
                     print_usage();
                     return -1;
                 }
@@ -93,8 +97,14 @@ int main(int argc, char **argv) {
         case SEQUENTIAL:
             sequential_mode(&matrix, stencil_mode);
             break;
-        case PARALLEL:
-            parallel_mode(&matrix, stencil_mode);
+        case OPENMP:
+            openmp_mode(&matrix, stencil_mode);
+            break;
+        case CILK:
+            cilk_mode(&matrix, stencil_mode);
+            break;
+        case MPI:
+
             break;
     }
 
@@ -128,15 +138,6 @@ void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
     destroy_matrix(&output_matrix);
 }
 
-void parallel_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
-    if (stencil_mode == STENCIL_7) {
-        run_openmp_stencil_7(matrix);
-    } else if (stencil_mode == STENCIL_27) {
-        run_openmp_stencil_27(matrix);
-    }
-}
-
-
 void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
     if (stencil_mode == STENCIL_7) {
         run_stencil_7(matrix);
@@ -145,21 +146,20 @@ void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
     }
 }
 
-void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals) {
-    if (include_boundary_vals) {
-        for (int k = 0; k < matrix->z; k++) {
-            for (int ij = 0; ij < matrix->x * matrix->y; ij++) {
-                printf("%f\n", matrix->arr[k][ij]);
-            }
-        }
-    } else {
-        for (int k = 1; k < matrix->z - 1; k++) {
-            for (int j = 1; j < matrix->y - 1; ++j) {
-                for (int i = 1; i < matrix->x - 1; ++i) {
-                    printf("%f\n", matrix->arr[k][i * j + i]);
-                }
-            }
-        }
+
+void openmp_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
+    if (stencil_mode == STENCIL_7) {
+        run_openmp_stencil_7(matrix);
+    } else if (stencil_mode == STENCIL_27) {
+        run_openmp_stencil_27(matrix);
+    }
+}
+
+void cilk_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
+    if (stencil_mode == STENCIL_7) {
+        run_cilk_stencil_7(matrix);
+    } else if (stencil_mode == STENCIL_27) {
+        fprintf(stderr, "27 stencil not yet implemented for cilk!\n");
     }
 }
 

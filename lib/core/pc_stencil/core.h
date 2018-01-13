@@ -1,6 +1,8 @@
 #ifndef PARCOMP_PROJECT_WS17_CORE_H
 #define PARCOMP_PROJECT_WS17_CORE_H
 
+#include <stdbool.h>
+
 struct pc_matrix {
     double **arr;
     int x;
@@ -56,6 +58,13 @@ int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest);
  * @return 1 if they are equal, 0 otherwise
  */
 int equal_matrix(struct pc_matrix *a, struct pc_matrix *b);
+
+/**
+ * Prints out the whole matrix to stdout
+ * @param matrix
+ * @param include_boundary_vals
+ */
+void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals);
 
 /**
  * This parses the file with the filename and returns the parsed array
