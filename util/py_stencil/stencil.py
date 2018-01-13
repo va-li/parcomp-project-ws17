@@ -94,7 +94,7 @@ def stencil_calculate(org, copy, func):
         # Perform stencil update
         for i in range(1, x-1):
             for j in range(1, y-1):
-                    func(org, copy, k, j, i)
+                func(org, copy, k, j, i)
     copy_all(copy, org)
 
 

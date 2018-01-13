@@ -1,0 +1,1 @@
+add_executable(data_generator data_generator/data_generator.c)

@@ -145,6 +145,6 @@ struct pc_matrix parse(char* filename) {
         parcomp_parser_error = 4;
         destroy_matrix(&ret);
     }
-    
+
     return ret;
 }

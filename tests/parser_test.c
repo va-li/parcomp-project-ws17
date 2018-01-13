@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <getopt.h>
-#include <mem.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "main/c/core/core.h"
-#include "main/c/sequential/sequential.h"
+#include "pc_stencil/core.h"
+#include "pc_stencil/sequential.h"
 
 #define MAX_FILENAME_CHARS (256)
 
