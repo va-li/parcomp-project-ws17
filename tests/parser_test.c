@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     bool debug = false;
     enum MODE mode = NAIVE;
 
-    while ((c = getopt(argc, argv, "dhi:m")) != -1) {
+    while ((c = getopt(argc, argv, "dhi:m:")) != -1) {
         switch (c) {
             case 'd':
                 debug = true;
