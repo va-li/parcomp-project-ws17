@@ -8,14 +8,19 @@
 
 #define MAX_FILENAME_CHARS (256)
 
-enum MODE {
+enum PROC_MODE {
     NAIVE = 0,
     SEQUENTIAL,
     PARALLEL
 };
 
-void naive_mode(struct pc_matrix *matrix);
-void sequential_mode(struct pc_matrix *matrix);
+enum STENCIL_MODE {
+    STENCIL_7 = 0,
+    STENCIL_27
+};
+
+void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
+void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals);
 void print_usage();
 
@@ -23,25 +28,35 @@ int main(int argc, char **argv) {
     int c;
     char *input_filename = "input.txt";
     bool debug = false, print = true;
-    enum MODE mode = NAIVE;
+    enum PROC_MODE proc_mode = NAIVE;
+    enum STENCIL_MODE stencil_mode = STENCIL_7;
 
-    while ((c = getopt(argc, argv, "sdhi:m:")) != -1) {
+    while ((c = getopt(argc, argv, "dhi:m:p:s")) != -1) {
         switch (c) {
-            case 's':
-                print = false;
-                break;
             case 'd':
                 debug = true;
                 break;
             case 'i':
                 input_filename = optarg;
                 break;
-            case 'm':
-                mode = (enum MODE) strtol(optarg, NULL, 10);
-                if (mode > PARALLEL) {
+            case 'p':
+                proc_mode = (enum PROC_MODE) strtol(optarg, NULL, 10);
+                if (proc_mode < NAIVE
+                    || proc_mode > PARALLEL) {
                     print_usage();
                     return -1;
                 }
+                break;
+            case 'm':
+                stencil_mode = (enum STENCIL_MODE) strtol(optarg, NULL, 10);
+                if (stencil_mode < STENCIL_7
+                    || stencil_mode > STENCIL_27) {
+                    print_usage();
+                    return -1;
+                }
+                break;
+            case 's':
+                print = false;
                 break;
             case 'h':
             case '?':
@@ -52,10 +67,6 @@ int main(int argc, char **argv) {
     }
 
     struct pc_matrix matrix = parse(input_filename);
-
-    if (!equal_matrix(&matrix, &matrix)) {
-        printf("Compare function doesn't work with the same matrix.");
-    }
 
     switch (parcomp_parser_error) {
         case 1:
@@ -74,12 +85,12 @@ int main(int argc, char **argv) {
             printf("The file is parsed successfully.\n");
     }
 
-    switch (mode) {
+    switch (proc_mode) {
         case NAIVE:
-            naive_mode(&matrix);
+            naive_mode(&matrix, stencil_mode);
             break;
         case SEQUENTIAL:
-            sequential_mode(&matrix);
+            sequential_mode(&matrix, stencil_mode);
             break;
         case PARALLEL:
             break;
@@ -93,7 +104,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void naive_mode(struct pc_matrix *matrix) {
+void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
     struct pc_matrix output_matrix;
 
     output_matrix.x = matrix->x;
@@ -103,7 +114,11 @@ void naive_mode(struct pc_matrix *matrix) {
     init_matrix(&output_matrix);
     alloc_matrix(&output_matrix);
 
-    run_naive_stencil_7(matrix, &output_matrix);
+    if (stencil_mode == STENCIL_7) {
+        run_naive_stencil_7(matrix, &output_matrix);
+    } else if (stencil_mode == STENCIL_27) {
+        run_naive_stencil_27(matrix, &output_matrix);
+    }
 
     double **tmp = matrix->arr;
     matrix->arr = output_matrix.arr;
@@ -112,8 +127,12 @@ void naive_mode(struct pc_matrix *matrix) {
     destroy_matrix(&output_matrix);
 }
 
-void sequential_mode(struct pc_matrix *matrix) {
-    run_stencil_7(matrix);
+void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
+    if (stencil_mode == STENCIL_7) {
+        run_stencil_7(matrix);
+    } else if (stencil_mode == STENCIL_27) {
+        run_stencil_27(matrix);
+    }
 }
 
 void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals) {
