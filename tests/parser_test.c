@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
             printf("Error: number of lines is not equals x*y*z.\n");
             break;
         default:
-            printf("The file is parsed successfully.\n");
+            if (print) printf("The file is parsed successfully.\n");
     }
 
     switch (proc_mode) {
@@ -96,8 +96,7 @@ int main(int argc, char **argv) {
             break;
     }
 
-    if (print)
-        print_matrix(&matrix, false);
+    if (print) print_matrix(&matrix, false);
 
     destroy_matrix(&matrix);
 
