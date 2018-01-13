@@ -92,12 +92,14 @@ void run_stencil_7(struct pc_matrix *matrix) {
             // Copy boundary values
             for (int i = 0; i < matrix->x; ++i) {
                 ELEMENT(calc_buff, i, 0) = ELEMENT(curr, i, 0);
-                ELEMENT(calc_buff, (matrix->x) - 1 - i, 0) = ELEMENT(curr, (matrix->x) - 1 - i, 0);
+                ELEMENT(calc_buff, i, matrix->y-1) = ELEMENT(curr, i, matrix->y-1);
+                //ELEMENT(calc_buff, (matrix->x) - 1 - i, 0) = ELEMENT(curr, (matrix->x) - 1 - i, 0);
             }
 
             for (int j = 0; j < matrix->y; ++j) {
-                ELEMENT(calc_buff, j, 0) = ELEMENT(curr, j, 0);
-                ELEMENT(calc_buff, (matrix->y) - 1 - j, 0) = ELEMENT(curr, (matrix->y) - 1 - j, 0);
+                ELEMENT(calc_buff, 0, j) = ELEMENT(curr, 0, j);
+                ELEMENT(calc_buff, matrix->x-1, j) = ELEMENT(curr, matrix->x-1, j);
+                //ELEMENT(calc_buff, 0, (matrix->y) - 1 - j) = ELEMENT(curr, 0, (matrix->y) - 1 - j);
             }
 
             for (int i = 1; i < matrix->x - 1; ++i) {
@@ -116,10 +118,16 @@ void run_stencil_7(struct pc_matrix *matrix) {
                 }
             }
 
-            double *tmp = calc_buff;
-            calc_buff = prev;
-            matrix->arr[k - 1] = updt_buff;
-            updt_buff = tmp;
+            if (k == 1) {
+                double *tmp = calc_buff;
+                calc_buff = updt_buff;
+                updt_buff = tmp;
+            } else {
+                double *tmp = calc_buff;
+                calc_buff = prev;
+                matrix->arr[k - 1] = updt_buff;
+                updt_buff = tmp;
+            }
         }
 
         double *tmp = matrix->arr[matrix->z - 2];
