@@ -4,7 +4,6 @@
 #include "main/c/sequential/sequential.h"
 
 int main() {
-    printf("Implement me!\n");
     struct pc_matrix matrix = parse("input.txt");
 
     switch (parcomp_parser_error) {
@@ -26,7 +25,13 @@ int main() {
 
     run_stencil_7(&matrix);
 
-    run_stencil_27(&matrix);
+    for (int i = 0; i < matrix.z; i++) {
+        for (int j = 0; j < matrix.x * matrix.y; j++) {
+            printf("%.3f\n",matrix.arr[i][j]);
+        }
+    }
+
+    //run_stencil_27(&matrix);
 
     destroy_matrix(&matrix);
     return 0;
