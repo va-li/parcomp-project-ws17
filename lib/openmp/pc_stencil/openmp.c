@@ -35,12 +35,6 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
         int start = id * ((matrix->z - 2) / NUM_THREADS) + 1;
         int end = start + (matrix->z - 2) / NUM_THREADS;
 
-        printf("Id: %d, Start: %d, End: %d, All: %d\n", id, start, end, matrix->z);
-
-        double *first_buff = first_buff_arr[id];
-        double *updt_buff = updt_buff_arr[id];
-        double *calc_buff = calc_buff_arr[id];
-
         for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
             
             for (int k = start; k < end; ++k) {
@@ -51,13 +45,13 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
 
                 // Copy boundary values
                 for (int i = 0; i < matrix->x; ++i) {
-                    ELEMENT(calc_buff, i, 0) = ELEMENT(curr, i, 0);
-                    ELEMENT(calc_buff, i, matrix->y-1) = ELEMENT(curr, i, matrix->y-1);
+                    ELEMENT(calc_buff_arr[id], i, 0) = ELEMENT(curr, i, 0);
+                    ELEMENT(calc_buff_arr[id], i, matrix->y-1) = ELEMENT(curr, i, matrix->y-1);
                 }
 
                 for (int j = 0; j < matrix->y; ++j) {
-                    ELEMENT(calc_buff, 0, j) = ELEMENT(curr, 0, j);
-                    ELEMENT(calc_buff, matrix->x-1, j) = ELEMENT(curr, matrix->x-1, j);
+                    ELEMENT(calc_buff_arr[id], 0, j) = ELEMENT(curr, 0, j);
+                    ELEMENT(calc_buff_arr[id], matrix->x-1, j) = ELEMENT(curr, matrix->x-1, j);
                 }
 
                 for (int i = 1; i < matrix->x - 1; ++i) {
@@ -72,7 +66,7 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
                         tmp += ELEMENT(prev, i, j);
                         tmp += ELEMENT(futu, i, j);
                         tmp /= 7;
-                        ELEMENT(calc_buff, i, j) = tmp;
+                        ELEMENT(calc_buff_arr[id], i, j) = tmp;
                     }
                 }
 
