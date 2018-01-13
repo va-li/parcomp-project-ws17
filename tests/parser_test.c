@@ -109,7 +109,7 @@ void naive_mode(struct pc_matrix *matrix) {
 }
 
 void sequential_mode(struct pc_matrix *matrix) {
-    // TODO
+    run_stencil_7(matrix);
 }
 
 void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals) {
