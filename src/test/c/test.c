@@ -17,7 +17,7 @@ enum MODE {
 
 void naive_mode(struct pc_matrix *matrix);
 void sequential_mode(struct pc_matrix *matrix);
-void print_matrix(struct pc_matrix *matrix);
+void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals);
 void print_usage();
 
 int main(int argc, char **argv) {
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
             break;
     }
 
-    print_matrix(&matrix);
+    print_matrix(&matrix, false);
 
     destroy_matrix(&matrix);
 
@@ -109,10 +109,20 @@ void sequential_mode(struct pc_matrix *matrix) {
     // TODO
 }
 
-void print_matrix(struct pc_matrix *matrix) {
-    for (int i = 0; i < matrix->z; i++) {
-        for (int j = 0; j < matrix->x * matrix->y; j++) {
-            printf("%f\n",matrix->arr[i][j]);
+void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals) {
+    if (include_boundary_vals) {
+        for (int k = 0; k < matrix->z; k++) {
+            for (int ij = 0; ij < matrix->x * matrix->y; ij++) {
+                printf("%f\n", matrix->arr[k][ij]);
+            }
+        }
+    } else {
+        for (int k = 1; k < matrix->z; k++) {
+            for (int i = 1; i < matrix->x - 1; ++i) {
+                for (int j = 1; j < matrix->y - 1; ++j) {
+                    printf("%f\n", matrix->arr[k][i * j + i]);
+                }
+            }
         }
     }
 }
