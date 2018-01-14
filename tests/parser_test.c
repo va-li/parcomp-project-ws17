@@ -21,6 +21,7 @@ enum STENCIL_MODE {
 };
 
 void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
+void parallel_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals);
 void print_usage();
