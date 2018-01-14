@@ -63,11 +63,12 @@ int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest);
 int equal_matrix(struct pc_matrix *a, struct pc_matrix *b, double threshold);
 
 /**
- * Prints out the whole matrix to stdout
+ * Prints out the whole matrix to FP
+ * @param fp
  * @param matrix
  * @param include_boundary_vals
  */
-void print_matrix(struct pc_matrix *matrix, bool include_boundary_vals);
+void print_matrix(FILE *fp, struct pc_matrix *matrix, bool include_boundary_vals);
 
 /**
  * This parses the file with the filename and returns the parsed array

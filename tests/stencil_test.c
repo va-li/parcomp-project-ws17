@@ -11,16 +11,16 @@
 #define MAX_FILENAME_CHARS (256)
 
 enum PROC_MODE {
-    NAIVE = 0,
-    SEQUENTIAL,
-    OPENMP,
-    CILK,
-    MPI
+    NAIVE = 'N',
+    SEQUENTIAL = 'S',
+    OPENMP = 'O',
+    CILK = 'C',
+    MPI = 'M'
 };
 
 enum STENCIL_MODE {
-    STENCIL_7 = 0,
-    STENCIL_27
+    STENCIL_7 = 7,
+    STENCIL_27 = 27
 };
 
 void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
@@ -29,66 +29,79 @@ void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void openmp_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode);
 void cilk_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode);
 void print_usage();
+void exit_error(const char *msg);
 
 int main(int argc, char **argv) {
     int c;
-    char *input_filename = "input.txt";
-    bool debug = false, print = true;
-    enum PROC_MODE proc_mode = NAIVE;
-    enum STENCIL_MODE stencil_mode = STENCIL_7;
+    bool verbose = false;
+    char *input_filename = NULL;
+    char *output_filename = NULL;
+    enum PROC_MODE proc_mode = NULL;
+    enum STENCIL_MODE stencil_mode = NULL;
 
-    while ((c = getopt(argc, argv, "dhi:m:p:s")) != -1) {
+    while ((c = getopt(argc, argv, "hi:o:sSv")) != -1) {
         switch (c) {
-            case 'd':
-                debug = true;
-                break;
             case 'i':
                 input_filename = optarg;
                 break;
-            case 'p':
-                proc_mode = (enum PROC_MODE) strtol(optarg, NULL, 10);
-                if (proc_mode < NAIVE
-                    || proc_mode > MPI) {
-                    print_usage();
-                    return -1;
-                }
-                break;
             case 'm':
-                stencil_mode = (enum STENCIL_MODE) strtol(optarg, NULL, 10);
-                if (stencil_mode < STENCIL_7
-                    || stencil_mode > STENCIL_27) {
-                    print_usage();
-                    return -1;
+                proc_mode = (enum PROC_MODE) *optarg;
+                if (proc_mode != NAIVE
+                    && proc_mode != SEQUENTIAL
+                    && proc_mode != OPENMP
+                    && proc_mode != CILK
+                    && proc_mode != MPI) {
+                    exit_error("Unknown process mode specifier (-p)!");
                 }
                 break;
             case 's':
-                print = false;
+                if (stencil_mode != NULL)
+                    exit_error("Stencil mode must be either -s (7 stencil) or -S (27 stencil)");
+
+                stencil_mode = STENCIL_7;
+                break;
+            case 'S':
+                if (stencil_mode != NULL)
+                    exit_error("Stencil mode must be either -s (7 stencil) or -S (27 stencil)");
+
+                stencil_mode = STENCIL_27;
+                break;
+            case 'o':
+                output_filename = optarg;
+                break;
+            case 'v':
+                verbose = true;
                 break;
             case 'h':
             case '?':
             default:
                 print_usage();
-                return -1;
+                exit(-1);
         }
     }
+
+    if (proc_mode == NULL)
+        exit_error("No process mode (-p) specified!");
+
+    if (stencil_mode == NULL)
+        exit_error("No stencil mode (-s|-S) specified!");
 
     struct pc_matrix matrix = parse(input_filename);
 
     switch (parcomp_parser_error) {
         case 1:
-            printf("Error: can't open the file.\n");
+            exit_error("Can't open input file!");
             break;
         case 2:
-            printf("Error: file is empty.\n");
+            exit_error("Input file is empty!");
             break;
         case 4:
-            printf("Error: could not parse x,y,z.\n");
+            exit_error("Could not parse x,y,z!");
             break;
         case 8:
-            printf("Error: number of lines is not equals x*y*z.\n");
-            break;
+            exit_error("Line count does not equal x*y*z!");
         default:
-            if (print) printf("The file is parsed successfully.\n");
+            if (verbose) printf("The file is parsed successfully.\n");
     }
 
     switch (proc_mode) {
@@ -109,7 +122,14 @@ int main(int argc, char **argv) {
             break;
     }
 
-    if (print) print_matrix(&matrix, false);
+    if (output_filename != NULL) {
+        FILE *f = fopen(output_filename, "w");
+
+        if (f == NULL)
+            exit_error("Could not open/create output file!");
+
+        print_matrix(f, &matrix, false);
+    }
 
     destroy_matrix(&matrix);
 
@@ -166,4 +186,10 @@ void cilk_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode) {
 
 void print_usage() {
     fprintf(stderr, "Impl print_usage()!");
+}
+
+void exit_error(const char *msg) {
+    fprintf(stderr, "Error: %s\n");
+    print_usage();
+    exit(-1);
 }
