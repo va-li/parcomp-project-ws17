@@ -2,8 +2,6 @@
 #include <cilk/cilk.h>
 #include "cilk_stencil.h"
 
-static void one_plane_pass_7_stencil(struct pc_matrix *matrix, double *pred, double *curr, double *succ, double *buff);
-
 void run_cilk_stencil_7(struct pc_matrix *matrix) {
     double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
     double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
@@ -12,11 +10,47 @@ void run_cilk_stencil_7(struct pc_matrix *matrix) {
 
         for (int k = 1; k < matrix->z-1; ++k) {
 
-            double* prev = matrix->arr[k - 1];
+            double* pred = matrix->arr[k - 1];
             double* curr = matrix->arr[k];
             double* succ = matrix->arr[k + 1];
 
-            one_plane_pass_7_stencil(matrix, prev, curr, succ, calc_buff);
+            int x = matrix->x;
+            int y = matrix->y;
+            int z = matrix->z;
+
+            // Copy boundary values
+            calc_buff[0 : x] = curr[0 : x]; // top
+            calc_buff[(y-1)*x : x] = curr[(y-1)*x : x]; // bottom
+            calc_buff[0 : y : x] = curr[0 : y : x]; // left
+            calc_buff[(x-1) : y : x] = curr[(x-1) : y : x]; // right
+
+            cilk_for (int j = 1; j < y - 1; ++j) {
+                for (int i = 1; i < x - 1; ++i) {
+
+                    double tmp = ELEMENT(curr, x, i, j);
+                    tmp += ELEMENT(curr, x, i, j + 1);
+                    tmp += ELEMENT(curr, x, i, j - 1);
+                    tmp += ELEMENT(curr, x, i + 1, j);
+                    tmp += ELEMENT(curr, x, i - 1, j);
+                    tmp += ELEMENT(pred, x, i, j);
+                    tmp += ELEMENT(succ, x, i, j);
+                    tmp /= 7;
+                    ELEMENT(calc_buff, x, i, j) = tmp;
+                }
+            }
+
+            /*
+            // Does not produce correct output
+            for (int j = 1; j < y - 1; j++) {
+                int from = j * x + 1;
+                int len = x-2;
+                int top_from = (j-1) * x + 1;
+                int bot_from = (j+1) * x + 1;
+                int r_from = from + 1;
+                int l_from = from - 1;
+                buff[from:len] = (pred[from:len] + curr[from:len] + succ[from:len] + curr[top_from:len] + curr[bot_from:len] + curr[r_from:len] + curr[l_from:len]);
+                buff[from:len] = buff[from:len] / 7;
+            }*/
 
             if (k == 1) {
                 double *tmp = calc_buff;
@@ -24,7 +58,7 @@ void run_cilk_stencil_7(struct pc_matrix *matrix) {
                 updt_buff = tmp;
             } else {
                 double *tmp = calc_buff;
-                calc_buff = prev;
+                calc_buff = pred;
                 matrix->arr[k - 1] = updt_buff;
                 updt_buff = tmp;
             }
@@ -37,61 +71,4 @@ void run_cilk_stencil_7(struct pc_matrix *matrix) {
 
     free(updt_buff);
     free(calc_buff);
-}
-
-static void one_plane_pass_7_stencil(struct pc_matrix *matrix, double *pred, double *curr, double *succ, double *buff) {
-    int x = matrix->x;
-    int y = matrix->y;
-    int z = matrix->z;
-
-
-    // Copy boundary values
-    buff[0 : x] = curr[0 : x]; // top
-    /*
-    buff[(y-1)*x : x] = curr[(y-1)*x : x]; // bottom
-    buff[0 : 1 : y] = curr[0 : 1 : y]; // left
-    buff[(x-2) : 1 : y] = curr[(x-2) : 1 : y]; // right
-*/
-
-    for (int i = 0; i < matrix->x; ++i) {
-        //ELEMENT(buff, x, i, 0) = ELEMENT(curr, x, i, 0);
-        ELEMENT(buff, x, i, matrix->y-1) = ELEMENT(curr, x, i, matrix->y-1);
-    }
-
-    for (int j = 0; j < matrix->y; ++j) {
-        ELEMENT(buff, x, 0, j) = ELEMENT(curr, x, 0, j);
-        ELEMENT(buff, x, matrix->x-1, j) = ELEMENT(curr, x, matrix->x-1, j);
-    }
-
-    // Horizontally calculate lines (possibly in parallel
-    /*cilk_for (int j = 1; j < y - 1; ++j) {
-        int n = x-2;
-        int m = y-2;
-        // smash top, center and bottom line together
-        buff[j*x : n] = curr[(j-1)*x : n] + curr[(j+1)*x : n];
-        //smash previous and next line together
-        buff[j*x : n] = buff[j*x : n] + pred[j*x : n] + succ[j*x : n];
-
-        for (int i = 1; i < x - 1; ++i) {
-            buff[i*j + i] = buff[i*j + i] + curr[i*j + i-1] + curr[i*j + i+1];
-        }
-
-        buff[1 : n] = buff[1 : n] / 7.0;
-    }*/
-
-    for (int i = 1; i < matrix->x - 1; ++i) {
-
-        for (int j = 1; j < matrix->y - 1; ++j) {
-
-            double tmp = ELEMENT(curr, x, i, j);
-            tmp += ELEMENT(curr, x, i, j + 1);
-            tmp += ELEMENT(curr, x, i, j - 1);
-            tmp += ELEMENT(curr, x, i + 1, j);
-            tmp += ELEMENT(curr, x, i - 1, j);
-            tmp += ELEMENT(pred, x, i, j);
-            tmp += ELEMENT(succ, x, i, j);
-            tmp /= 7;
-            ELEMENT(buff, x, i, j) = tmp;
-        }
-    }
 }
