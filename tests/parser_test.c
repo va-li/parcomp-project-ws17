@@ -24,6 +24,7 @@ enum STENCIL_MODE {
 };
 
 void naive_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
+void parallel_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void sequential_mode(struct pc_matrix *matrix, enum STENCIL_MODE);
 void openmp_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode);
 void cilk_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode);
