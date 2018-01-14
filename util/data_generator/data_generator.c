@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     while ((c = getopt(argc, argv, "ho:p:n:m:l:")) != -1) {
         switch (c) {
             case 'o':
-                (void) strncpy(output_filename, optarg, strnlen(optarg, MAX_FILENAME_CHARS));
+                output_filename = optarg;
                 break;
             case 'p':
                 processor_count = strtol(optarg, NULL, 10);
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    FILE *fp = fopen("./input.txt", "w");
+    FILE *fp = fopen(output_filename, "w");
     (void) fprintf(fp, "%li;%li;%li\n", x_dim, y_dim, y_dim);
 
     long value_count = x_dim * y_dim * z_dim;

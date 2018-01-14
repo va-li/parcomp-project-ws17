@@ -34,7 +34,7 @@ void openmp_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode, struc
 void cilk_mode(struct pc_matrix *matrix, enum STENCIL_MODE stencil_mode, struct timespec *start, struct timespec *end);
 void print_usage();
 void exit_error(char *msg);
-void print_time(FILE *f, uint64_t value) ;
+void print_time(FILE *f, long value) ;
 
 int main(int argc, char **argv) {
     int c;
@@ -161,30 +161,29 @@ int main(int argc, char **argv) {
             break;
     }
 
-    uint64_t timde_diff = (uint64_t) 1000000000L * (t_end.tv_sec - t_start.tv_sec) + t_end.tv_nsec - t_start.tv_nsec;
+    long int time_diff = (1000000000L*t_end.tv_sec + t_end.tv_nsec) - (1000000000L*t_start.tv_sec + t_start.tv_nsec);
 
     if (verbose) printf("Finished computation.\n");
 
     if (verbose || print_timing) {
-        printf("Time:\n");
         switch (proc_mode) {
             case NAIVE:
-                printf("Algorithm: naive ");
+                printf("naive ");
                 break;
             case SEQUENTIAL:
-                printf("Algorithm: sequential ");
+                printf("sequential ");
                 break;
             case OPENMP:
-                printf("Algorithm: OpenMP ");
+                printf("OpenMP ");
                 break;
             case CILK:
-                printf("Algorithm: cilk ");
+                printf("cilk ");
                 break;
             case MPI:
-                printf("Algorithm: MPI ");
+                printf("MPI ");
                 break;
         }
-        print_time(stdout, timde_diff);
+        print_time(stdout, time_diff);
     }
 
     if (check_correctness) {
@@ -212,7 +211,7 @@ int main(int argc, char **argv) {
 
         if (verbose) printf("Writing timing results to output file...\n");
 
-        print_time(f, timde_diff);
+        print_time(f, time_diff);
 
         if (verbose) printf("Done.\n");
     }
@@ -297,12 +296,12 @@ void exit_error(char *msg) {
     exit(-1);
 }
 
-void print_time(FILE *f, uint64_t value) {
-    int nano = (int) value % 1000;
+void print_time(FILE *f, long value) {
+    int nano = (int) (value % 1000);
     value /= 1000;
-    int micro = (int) value % 1000;
+    int micro = (int) (value % 1000);
     value /= 1000;
-    int milli = (int) value % 1000;
+    int milli = (int) (value % 1000);
     value /= 1000;
     int seconds = (int) (value % 60);
     value /= 60;
