@@ -15,11 +15,13 @@ struct pc_matrix {
  */
 #define ITERATION_COUNT (100)
 
-#define NUM_THREADS 2
+#define NUM_THREADS (2)
 
 #define ELEMENT(ARR, LINE_LENGTH, X, Y) ((ARR)[(LINE_LENGTH)*(Y) + (X)])
 
-#define PARSER_BUFFER_SIZE 256
+#define PARSER_BUFFER_SIZE (256)
+
+#define CMP_THRESHOLD (0.01)
 
 int parcomp_parser_error;
 
@@ -52,12 +54,13 @@ void alloc_matrix(struct pc_matrix *matrix);
 int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest);
 
 /**
- * Check two matrices if they have equal values
+ * Check two matrices if the difference between each value in a and b is smaller than the threshold
  * @param a
  * @param b
+ * @param threshold
  * @return 1 if they are equal, 0 otherwise
  */
-int equal_matrix(struct pc_matrix *a, struct pc_matrix *b);
+int equal_matrix(struct pc_matrix *a, struct pc_matrix *b, double threshold);
 
 /**
  * Prints out the whole matrix to stdout

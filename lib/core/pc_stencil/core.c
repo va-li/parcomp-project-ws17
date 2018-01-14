@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <stdlib.h>
+#include <math.h>
 #include "core.h"
 
 int parcomp_parser_error = 0;
@@ -40,7 +41,7 @@ void destroy_matrix(struct pc_matrix *matrix) {
 int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest) {
     if ((src->x != dest->x)
         || (src->y != dest->y)
-        ||(src->z != dest->z)) {
+        || (src->z != dest->z)) {
         return -1;
     }
 
@@ -53,18 +54,18 @@ int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest) {
     return 0;
 }
 
-int equal_matrix(struct pc_matrix *a, struct pc_matrix *b) {
+int equal_matrix(struct pc_matrix *a, struct pc_matrix *b, double threshold) {
     if ((a->x != b->x)
         || (a->y != b->y)
-        ||(a->z != b->z)) {
+        || (a->z != b->z)) {
         return 0;
     }
 
     int ret = 1;
 
     for (int k = 0; k < a->z; ++k) {
-        for (int ij = 0; ij < a->x*a->y; ++ij) {
-            if (a->arr[k][ij] != b->arr[k][ij]) ret = 0;
+        for (int ij = 0; ij < a->x * a->y; ++ij) {
+            if (fabs(a->arr[k][ij] - b->arr[k][ij]) < threshold) ret = 0;
         }
     }
 
@@ -141,7 +142,7 @@ int xyz_from_string(struct pc_matrix *matrix, char *string) {
     return 0;
 }
 
-struct pc_matrix parse(char* filename) {
+struct pc_matrix parse(char *filename) {
     struct pc_matrix ret;
     init_matrix(&ret);
 
