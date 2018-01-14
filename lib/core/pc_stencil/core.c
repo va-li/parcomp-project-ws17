@@ -65,7 +65,7 @@ int equal_matrix(struct pc_matrix *a, struct pc_matrix *b, double threshold) {
 
     for (int k = 0; k < a->z; ++k) {
         for (int ij = 0; ij < a->x * a->y; ++ij) {
-            if (fabs(a->arr[k][ij] - b->arr[k][ij]) < threshold) ret = 0;
+            if (fabs(a->arr[k][ij] - b->arr[k][ij]) > threshold) ret = 0;
         }
     }
 

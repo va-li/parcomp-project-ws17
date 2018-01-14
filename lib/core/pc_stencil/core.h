@@ -1,6 +1,7 @@
 #ifndef PARCOMP_PROJECT_WS17_CORE_H
 #define PARCOMP_PROJECT_WS17_CORE_H
 
+#include <stdio.h>
 #include <stdbool.h>
 
 struct pc_matrix {
