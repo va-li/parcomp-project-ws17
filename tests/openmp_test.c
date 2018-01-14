@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <evdns.h>
+//#include <evdns.h>
 
 #include "pc_stencil/core.h"
 #include "pc_stencil/openmp.h"
@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
     }
 
     if (check_correctness) {
-        int equals = equal_matrix(&m_seq, &m_omp);
+        int equals = equal_matrix(&m_seq, &m_omp, CMP_THRESHOLD);
         if (equals) {
             printf("The calculation is correct.\n");
         } else {
