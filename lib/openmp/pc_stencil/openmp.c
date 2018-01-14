@@ -27,6 +27,7 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
     double *first_buff_arr[NUM_THREADS];
     double *updt_buff_arr[NUM_THREADS];
     double *calc_buff_arr[NUM_THREADS];
+    int line_length = matrix->x;
 
     for (int i = 0; i < NUM_THREADS; ++i) {
         first_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
@@ -54,28 +55,28 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
 
                 // Copy boundary values
                 for (int i = 0; i < matrix->x; ++i) {
-                    ELEMENT(calc_buff_arr[id], i, 0) = ELEMENT(curr, i, 0);
-                    ELEMENT(calc_buff_arr[id], i, matrix->y - 1) = ELEMENT(curr, i, matrix->y - 1);
+                    ELEMENT(calc_buff_arr[id], line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
+                    ELEMENT(calc_buff_arr[id], line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i, matrix->y - 1);
                 }
 
                 for (int j = 0; j < matrix->y; ++j) {
-                    ELEMENT(calc_buff_arr[id], 0, j) = ELEMENT(curr, 0, j);
-                    ELEMENT(calc_buff_arr[id], matrix->x - 1, j) = ELEMENT(curr, matrix->x - 1, j);
+                    ELEMENT(calc_buff_arr[id], line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
+                    ELEMENT(calc_buff_arr[id], line_length, matrix->x - 1, j) = ELEMENT(curr, line_length, matrix->x - 1, j);
                 }
 
                 for (int i = 1; i < matrix->x - 1; ++i) {
 
                     for (int j = 1; j < matrix->y - 1; ++j) {
 
-                        double tmp = ELEMENT(curr, i, j);
-                        tmp += ELEMENT(curr, i, j + 1);
-                        tmp += ELEMENT(curr, i, j - 1);
-                        tmp += ELEMENT(curr, i + 1, j);
-                        tmp += ELEMENT(curr, i - 1, j);
-                        tmp += ELEMENT(prev, i, j);
-                        tmp += ELEMENT(futu, i, j);
+                        double tmp = ELEMENT(curr, line_length, i, j);
+                        tmp += ELEMENT(curr, line_length, i, j + 1);
+                        tmp += ELEMENT(curr, line_length, i, j - 1);
+                        tmp += ELEMENT(curr, line_length, i + 1, j);
+                        tmp += ELEMENT(curr, line_length, i - 1, j);
+                        tmp += ELEMENT(prev, line_length, i, j);
+                        tmp += ELEMENT(futu, line_length, i, j);
                         tmp /= 7;
-                        ELEMENT(calc_buff_arr[id], i, j) = tmp;
+                        ELEMENT(calc_buff_arr[id], line_length, i, j) = tmp;
                     }
                 }
 
@@ -121,6 +122,7 @@ void run_openmp_stencil_27(struct pc_matrix *matrix) {
     double *first_buff_arr[NUM_THREADS];
     double *updt_buff_arr[NUM_THREADS];
     double *calc_buff_arr[NUM_THREADS];
+    int line_length = matrix->x;
 
     for (int i = 0; i < NUM_THREADS; ++i) {
         first_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
@@ -148,13 +150,13 @@ void run_openmp_stencil_27(struct pc_matrix *matrix) {
 
                 // Copy boundary values
                 for (int i = 0; i < matrix->x; ++i) {
-                    ELEMENT(calc_buff_arr[id], i, 0) = ELEMENT(curr, i, 0);
-                    ELEMENT(calc_buff_arr[id], i, matrix->y - 1) = ELEMENT(curr, i, matrix->y - 1);
+                    ELEMENT(calc_buff_arr[id], line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
+                    ELEMENT(calc_buff_arr[id], line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i, matrix->y - 1);
                 }
 
                 for (int j = 0; j < matrix->y; ++j) {
-                    ELEMENT(calc_buff_arr[id], 0, j) = ELEMENT(curr, 0, j);
-                    ELEMENT(calc_buff_arr[id], matrix->x - 1, j) = ELEMENT(curr, matrix->x - 1, j);
+                    ELEMENT(calc_buff_arr[id], line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
+                    ELEMENT(calc_buff_arr[id], line_length, matrix->x - 1, j) = ELEMENT(curr, line_length, matrix->x - 1, j);
                 }
 
                 for (int i = 1; i < matrix->x - 1; ++i) {
@@ -164,15 +166,15 @@ void run_openmp_stencil_27(struct pc_matrix *matrix) {
                         double tmp = 0;
                         for (int a = -1; a < 2; ++a) {
                             for (int b = -1; b < 2; ++b) {
-                                tmp += ELEMENT(prev, i + a, j + b);
-                                tmp += ELEMENT(curr, i + a, j + b);
-                                tmp += ELEMENT(futu, i + a, j + b);
+                                tmp += ELEMENT(prev, line_length, i + a, j + b);
+                                tmp += ELEMENT(curr, line_length, i + a, j + b);
+                                tmp += ELEMENT(futu, line_length, i + a, j + b);
                             }
                         }
 
                         tmp /= 27;
 
-                        ELEMENT(calc_buff_arr[id], i, j) = tmp;
+                        ELEMENT(calc_buff_arr[id], line_length, i, j) = tmp;
                     }
                 }
 

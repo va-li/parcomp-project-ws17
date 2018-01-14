@@ -44,14 +44,27 @@ static void one_plane_pass_7_stencil(struct pc_matrix *matrix, double *pred, dou
     int y = matrix->y;
     int z = matrix->z;
 
+
     // Copy boundary values
     buff[0 : x] = curr[0 : x]; // top
+    /*
     buff[(y-1)*x : x] = curr[(y-1)*x : x]; // bottom
     buff[0 : 1 : y] = curr[0 : 1 : y]; // left
     buff[(x-2) : 1 : y] = curr[(x-2) : 1 : y]; // right
+*/
+
+    for (int i = 0; i < matrix->x; ++i) {
+        //ELEMENT(buff, x, i, 0) = ELEMENT(curr, x, i, 0);
+        ELEMENT(buff, x, i, matrix->y-1) = ELEMENT(curr, x, i, matrix->y-1);
+    }
+
+    for (int j = 0; j < matrix->y; ++j) {
+        ELEMENT(buff, x, 0, j) = ELEMENT(curr, x, 0, j);
+        ELEMENT(buff, x, matrix->x-1, j) = ELEMENT(curr, x, matrix->x-1, j);
+    }
 
     // Horizontally calculate lines (possibly in parallel
-    cilk_for (int j = 1; j < y - 1; ++j) {
+    /*cilk_for (int j = 1; j < y - 1; ++j) {
         int n = x-2;
         int m = y-2;
         // smash top, center and bottom line together
@@ -64,5 +77,21 @@ static void one_plane_pass_7_stencil(struct pc_matrix *matrix, double *pred, dou
         }
 
         buff[1 : n] = buff[1 : n] / 7.0;
+    }*/
+
+    for (int i = 1; i < matrix->x - 1; ++i) {
+
+        for (int j = 1; j < matrix->y - 1; ++j) {
+
+            double tmp = ELEMENT(curr, x, i, j);
+            tmp += ELEMENT(curr, x, i, j + 1);
+            tmp += ELEMENT(curr, x, i, j - 1);
+            tmp += ELEMENT(curr, x, i + 1, j);
+            tmp += ELEMENT(curr, x, i - 1, j);
+            tmp += ELEMENT(pred, x, i, j);
+            tmp += ELEMENT(succ, x, i, j);
+            tmp /= 7;
+            ELEMENT(buff, x, i, j) = tmp;
+        }
     }
 }

@@ -44,11 +44,9 @@ int copy_matrix(struct pc_matrix *src, struct pc_matrix *dest) {
         return -1;
     }
 
-    for (int i = 0; i < src->x; ++i) {
-        for (int j = 0; j < src->y; ++j) {
-            for (int k = 0; k < src->z; ++k) {
-                dest->arr[k][i*j + i] = src->arr[k][i*j + i];
-            }
+    for (int k = 0; k < src->z; ++k) {
+        for (int ij = 0; ij < src->x * src->y; ++ij) {
+            dest->arr[k][ij] = src->arr[k][ij];
         }
     }
 

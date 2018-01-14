@@ -17,7 +17,7 @@ struct pc_matrix {
 
 #define NUM_THREADS 2
 
-#define ELEMENT(ARR, X, Y) ((ARR)[(X)*(Y) + (X)])
+#define ELEMENT(ARR, LINE_LENGTH, X, Y) ((ARR)[(LINE_LENGTH)*(Y) + (X)])
 
 #define PARSER_BUFFER_SIZE 256
 
