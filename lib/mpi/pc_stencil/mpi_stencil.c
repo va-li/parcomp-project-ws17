@@ -83,7 +83,7 @@ int run_stencil_mpi(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
     int line_length = matrix->x;
     int plane_length = matrix->x*matrix->y;
 
-    for (int pass = 0; pass < 1; ++pass) {
+    for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
 
         for (int k = 1; k < matrix->z-1; ++k) {
 
@@ -177,10 +177,7 @@ int print_matrix_mpi(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
         counter++;
     }
 
-    int start = mpi_rank == 0 ? 1 : 0;
-    int end = mpi_rank == mpi_size - 1 ? matrix->z-1 : matrix->z;
-
-    for (int z = start; z < end; ++z) {
+    for (int z = 1; z < matrix->z - 1; ++z) {
         for (int y = 1; y < matrix->y - 1; ++y) {
             for (int x = 1; x < matrix->x - 1; ++x) {
                 printf("%f\n", ELEMENT(matrix->arr[z], matrix->x, x, y));
