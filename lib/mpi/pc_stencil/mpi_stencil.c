@@ -61,7 +61,7 @@ struct pc_matrix parse_matrix_mpi(int mpi_rank, int mpi_size, char *filename) {
 
     // TODO : Can improve this by going directly to the position on the file using `fseek`
     for (i = 0; fgets(buff, PARSER_BUFFER_SIZE, f) != NULL; i++) {
-        int old_z = i/plane_size;
+        int old_z = i / plane_size;
         if (old_z >= end) {
             break;
         }
@@ -83,30 +83,29 @@ int run_mpi_stencil7(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
     double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
     double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
     int line_length = matrix->x;
-    int plane_length = matrix->x*matrix->y;
+    int plane_length = matrix->x * matrix->y;
 
     for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
 
-        for (int k = 1; k < matrix->z-1; ++k) {
+        for (int k = 1; k < matrix->z - 1; ++k) {
 
-            double* prev = matrix->arr[k - 1];
-            double* curr = matrix->arr[k];
-            double* futu = matrix->arr[k + 1];
+            double *prev = matrix->arr[k - 1];
+            double *curr = matrix->arr[k];
+            double *futu = matrix->arr[k + 1];
 
             // Copy boundary values
             for (int i = 0; i < matrix->x; ++i) {
                 ELEMENT(calc_buff, line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
-                ELEMENT(calc_buff, line_length, i, matrix->y-1) = ELEMENT(curr, line_length, i, matrix->y-1);
+                ELEMENT(calc_buff, line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i, matrix->y - 1);
             }
 
             for (int j = 0; j < matrix->y; ++j) {
                 ELEMENT(calc_buff, line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
-                ELEMENT(calc_buff, line_length, matrix->x-1, j) = ELEMENT(curr, line_length, matrix->x-1, j);
+                ELEMENT(calc_buff, line_length, matrix->x - 1, j) = ELEMENT(curr, line_length, matrix->x - 1, j);
             }
 
-            for (int i = 1; i < matrix->x - 1; ++i) {
-
-                for (int j = 1; j < matrix->y - 1; ++j) {
+            for (int j = 1; j < matrix->y - 1; ++j) {
+                for (int i = 1; i < matrix->x - 1; ++i) {
 
                     double tmp = ELEMENT(curr, line_length, i, j);
                     tmp += ELEMENT(curr, line_length, i, j + 1);
@@ -142,27 +141,30 @@ int run_mpi_stencil7(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
         MPI_Request tmp1;
         if (mpi_rank != 0) {
             // Send it to the left one
-            MPI_Isend(matrix->arr[1], plane_length, MPI_DOUBLE, mpi_rank-1, LEFT_MSG, MPI_COMM_WORLD, &tmp1);
+            MPI_Isend(matrix->arr[1], plane_length, MPI_DOUBLE, mpi_rank - 1, LEFT_MSG, MPI_COMM_WORLD, &tmp1);
         }
 
         MPI_Request tmp2;
-        if (mpi_rank != mpi_size-1) {
+        if (mpi_rank != mpi_size - 1) {
             // Send it to the left one
-            MPI_Isend(matrix->arr[matrix->z-2], plane_length, MPI_DOUBLE, mpi_rank+1, RIGHT_MSG, MPI_COMM_WORLD, &tmp2);
+            MPI_Isend(matrix->arr[matrix->z - 2], plane_length, MPI_DOUBLE, mpi_rank + 1, RIGHT_MSG, MPI_COMM_WORLD,
+                      &tmp2);
         }
 
 
         if (mpi_rank != 0) {
             // Receive from left
-            MPI_Recv(matrix->arr[0], plane_length, MPI_DOUBLE, mpi_rank-1, RIGHT_MSG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(matrix->arr[0], plane_length, MPI_DOUBLE, mpi_rank - 1, RIGHT_MSG, MPI_COMM_WORLD,
+                     MPI_STATUS_IGNORE);
         }
 
-        if (mpi_rank != mpi_size-1) {
+        if (mpi_rank != mpi_size - 1) {
             // Receive from right
-            MPI_Recv(matrix->arr[matrix->z-1], plane_length, MPI_DOUBLE, mpi_rank + 1, LEFT_MSG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(matrix->arr[matrix->z - 1], plane_length, MPI_DOUBLE, mpi_rank + 1, LEFT_MSG, MPI_COMM_WORLD,
+                     MPI_STATUS_IGNORE);
         }
         if (mpi_rank != 0) MPI_Wait(&tmp1, MPI_STATUS_IGNORE);
-        if (mpi_rank != mpi_size-1) MPI_Wait(&tmp2, MPI_STATUS_IGNORE);
+        if (mpi_rank != mpi_size - 1) MPI_Wait(&tmp2, MPI_STATUS_IGNORE);
     }
 
     free(updt_buff);
@@ -173,30 +175,29 @@ int run_mpi_stencil27(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
     double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
     double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
     int line_length = matrix->x;
-    int plane_length = matrix->x*matrix->y;
+    int plane_length = matrix->x * matrix->y;
 
     for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
 
-        for (int k = 1; k < matrix->z-1; ++k) {
+        for (int k = 1; k < matrix->z - 1; ++k) {
 
-            double* prev = matrix->arr[k - 1];
-            double* curr = matrix->arr[k];
-            double* futu = matrix->arr[k + 1];
+            double *prev = matrix->arr[k - 1];
+            double *curr = matrix->arr[k];
+            double *futu = matrix->arr[k + 1];
 
             // Copy boundary values
             for (int i = 0; i < matrix->x; ++i) {
                 ELEMENT(calc_buff, line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
-                ELEMENT(calc_buff, line_length, i, matrix->y-1) = ELEMENT(curr, line_length, i, matrix->y-1);
+                ELEMENT(calc_buff, line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i, matrix->y - 1);
             }
 
             for (int j = 0; j < matrix->y; ++j) {
                 ELEMENT(calc_buff, line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
-                ELEMENT(calc_buff, line_length, matrix->x-1, j) = ELEMENT(curr, line_length, matrix->x-1, j);
+                ELEMENT(calc_buff, line_length, matrix->x - 1, j) = ELEMENT(curr, line_length, matrix->x - 1, j);
             }
 
-            for (int i = 1; i < matrix->x - 1; ++i) {
-
-                for (int j = 1; j < matrix->y - 1; ++j) {
+            for (int j = 1; j < matrix->y - 1; ++j) {
+                for (int i = 1; i < matrix->x - 1; ++i) {
 
                     double tmp = 0;
                     for (int a = -1; a < 2; ++a) {
@@ -234,27 +235,30 @@ int run_mpi_stencil27(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
         MPI_Request tmp1;
         if (mpi_rank != 0) {
             // Send it to the left one
-            MPI_Isend(matrix->arr[1], plane_length, MPI_DOUBLE, mpi_rank-1, LEFT_MSG, MPI_COMM_WORLD, &tmp1);
+            MPI_Isend(matrix->arr[1], plane_length, MPI_DOUBLE, mpi_rank - 1, LEFT_MSG, MPI_COMM_WORLD, &tmp1);
         }
 
         MPI_Request tmp2;
-        if (mpi_rank != mpi_size-1) {
+        if (mpi_rank != mpi_size - 1) {
             // Send it to the left one
-            MPI_Isend(matrix->arr[matrix->z-2], plane_length, MPI_DOUBLE, mpi_rank+1, RIGHT_MSG, MPI_COMM_WORLD, &tmp2);
+            MPI_Isend(matrix->arr[matrix->z - 2], plane_length, MPI_DOUBLE, mpi_rank + 1, RIGHT_MSG, MPI_COMM_WORLD,
+                      &tmp2);
         }
 
 
         if (mpi_rank != 0) {
             // Receive from left
-            MPI_Recv(matrix->arr[0], plane_length, MPI_DOUBLE, mpi_rank-1, RIGHT_MSG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(matrix->arr[0], plane_length, MPI_DOUBLE, mpi_rank - 1, RIGHT_MSG, MPI_COMM_WORLD,
+                     MPI_STATUS_IGNORE);
         }
 
-        if (mpi_rank != mpi_size-1) {
+        if (mpi_rank != mpi_size - 1) {
             // Receive from right
-            MPI_Recv(matrix->arr[matrix->z-1], plane_length, MPI_DOUBLE, mpi_rank + 1, LEFT_MSG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(matrix->arr[matrix->z - 1], plane_length, MPI_DOUBLE, mpi_rank + 1, LEFT_MSG, MPI_COMM_WORLD,
+                     MPI_STATUS_IGNORE);
         }
         if (mpi_rank != 0) MPI_Wait(&tmp1, MPI_STATUS_IGNORE);
-        if (mpi_rank != mpi_size-1) MPI_Wait(&tmp2, MPI_STATUS_IGNORE);
+        if (mpi_rank != mpi_size - 1) MPI_Wait(&tmp2, MPI_STATUS_IGNORE);
     }
 
     free(updt_buff);
@@ -282,7 +286,7 @@ int print_matrix_mpi(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
 
 
     // Let the next one continue if not last
-    while (counter != mpi_size-1) {
+    while (counter != mpi_size - 1) {
         MPI_Barrier(MPI_COMM_WORLD);
         counter++;
     }
