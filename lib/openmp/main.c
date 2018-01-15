@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
                 break;
             default:
                 print_common_usage();
+                fprintf(stderr, "ADD (+n | -n) IN MODE PARAMETER (+ print out, - dont print out, n = number of suggested processors) ");
                 return -1;
         }
 
