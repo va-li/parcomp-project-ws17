@@ -83,7 +83,7 @@ void print_matrix(FILE *fp, struct pc_matrix *matrix, bool include_boundary_vals
         for (int k = 1; k < matrix->z - 1; k++) {
             for (int j = 1; j < matrix->y - 1; ++j) {
                 for (int i = 1; i < matrix->x - 1; ++i) {
-                    fprintf(fp, "%f\n", matrix->arr[k][i * j + i]);
+                    fprintf(fp, "%.02f\n", ELEMENT(matrix->arr[k], matrix->x, i, j));
                 }
             }
         }

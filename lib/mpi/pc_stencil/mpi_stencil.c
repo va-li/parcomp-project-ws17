@@ -2,6 +2,7 @@
 
 #include <mpi.h>
 #include <stdlib.h>
+#include <math.h>
 
 inline static void calculate_load_values(int *start, int *end, int z, int mpi_rank, int mpi_size) {
     // Number of stencils that have to be calculated
@@ -159,8 +160,8 @@ int run_stencil_mpi(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
             // Receive from right
             MPI_Recv(matrix->arr[matrix->z-1], plane_length, MPI_DOUBLE, mpi_rank + 1, LEFT_MSG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
-        //if (mpi_rank != 0) MPI_Wait(&tmp1, MPI_STATUS_IGNORE);
-        //if (mpi_rank != mpi_size-1) MPI_Wait(&tmp2, MPI_STATUS_IGNORE);
+        if (mpi_rank != 0) MPI_Wait(&tmp1, MPI_STATUS_IGNORE);
+        if (mpi_rank != mpi_size-1) MPI_Wait(&tmp2, MPI_STATUS_IGNORE);
     }
 
     free(updt_buff);
@@ -180,7 +181,7 @@ int print_matrix_mpi(int mpi_rank, int mpi_size, struct pc_matrix *matrix) {
     for (int z = 1; z < matrix->z - 1; ++z) {
         for (int y = 1; y < matrix->y - 1; ++y) {
             for (int x = 1; x < matrix->x - 1; ++x) {
-                printf("%f\n", ELEMENT(matrix->arr[z], matrix->x, x, y));
+                printf("%.02f\n", ELEMENT(matrix->arr[z], matrix->x, x, y));
             }
         }
 

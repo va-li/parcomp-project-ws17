@@ -202,6 +202,10 @@ int main(int argc, char **argv) {
         } else if (verbose) {
             printf("No differences found! The output seems correct.\n");
         }
+
+        // IF WE NEED TO PRINT A SOLUTION.. UNCOMMENT THIS
+        //FILE *fp = fopen("out_put.txt", "a");
+        //print_matrix(fp, &matrix, false);
     }
 
     if (output_filename != NULL) {
