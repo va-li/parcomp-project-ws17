@@ -14,8 +14,8 @@ void print_benchmark(double seconds, int xyz, int cores, bool stencil7, bool hum
 
     xyz -= 2;
 
-    if (human) print_benchmark_human(micro, xyz, cores, stencil7, "MPI");
-    else print_benchmark_csv(micro, xyz, cores, stencil7, "MPI");
+    if (human) print_benchmark_human(micro, xyz, cores, stencil7, "OpenMP");
+    else print_benchmark_csv(micro, xyz, cores, stencil7, "OpenMP");
 }
 
 int main(int argc, char **argv) {

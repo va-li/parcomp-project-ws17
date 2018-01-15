@@ -7,6 +7,7 @@
 #include "pc_stencil/sequential.h"
 
 void print_benchmark(long nanoseconds, int xyz, bool stencil7, bool human) {
+    xyz -= 2;
     if (human) print_benchmark_human(nanoseconds / 1000, xyz, 1, stencil7, "Sequential");
     else print_benchmark_csv(nanoseconds / 1000, xyz, 1, stencil7, "Sequential");
 }
