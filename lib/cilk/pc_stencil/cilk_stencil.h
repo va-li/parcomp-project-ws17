@@ -8,5 +8,6 @@
  * @param matrix
  */
 void run_cilk_stencil_7(struct pc_matrix *matrix);
+void run_cilk_stencil_27(struct pc_matrix *matrix);
 
 #endif //PARCOMP_PROJECT_WS17_CILK_STENCIL_H

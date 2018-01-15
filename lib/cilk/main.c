@@ -59,16 +59,14 @@ int main(int argc, char **argv) {
 
     clock_gettime(0, &start);
 
-    // TODO : ADD stencil 27
     if (stencil7) run_cilk_stencil_7(&matrix);
-    //else run_cilk_stencil_7(&matrix);
+    else run_cilk_stencil_27(&matrix);
 
     clock_gettime(0, &end);
 
     if (print_out) {
         print_matrix(stdout, &matrix, false);
     } else {
-        //TODO : FIX TIMING
         print_benchmark(((long)end.tv_sec*1000000000 + end.tv_nsec) - ((long)start.tv_sec*1000000000 + start.tv_nsec), matrix.x, pc_openmp_used_threads, stencil7, human);
     }
 

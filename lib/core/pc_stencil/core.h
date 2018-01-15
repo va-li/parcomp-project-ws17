@@ -14,7 +14,7 @@ struct pc_matrix {
 /**
  * Number of times a stencil is applied to the matrix
  */
-#define ITERATION_COUNT (100)
+#define ITERATION_COUNT (3)
 
 int pc_openmp_sugessted_threads;
 
