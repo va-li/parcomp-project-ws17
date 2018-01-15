@@ -2,25 +2,19 @@
 #include <mpi.h>
 
 #include "pc_stencil/mpi_stencil.h"
+#include "pc_stencil/utils.h"
 
 int run = 1;
 
-void print_time_human(double seconds) {
-    int sec = (int) seconds;
-    int milli = (int) ((seconds - sec) * 1000);
-    int min = sec / 60;
-    int hr = min / 60;
-    sec %= 60;
-    printf("%dh %dm %ds %dmilli\n", hr, min, sec, milli);
-}
-
-void print_time_csv(double seconds, int xyz, int cores, bool stencil7) {
+void print_benchmark(double seconds, int xyz, int cores, bool stencil7, bool human) {
     long sec = (long) seconds;
     long micro = (long) ((seconds - sec) * 1000000);
     micro += sec * 1000000;
+
     xyz -= 2;
-    // XxYxZ,stencil_type,MPI,cores,microseconds
-    printf("%dx%dx%d,%d,MPI,%d,%ld\n",xyz, xyz, xyz, (stencil7?7:27), cores, micro);
+
+    if (human) print_benchmark_human(micro, xyz, cores, stencil7, "MPI");
+    else print_benchmark_csv(micro, xyz, cores, stencil7, "MPI");
 }
 
 int main(int argc, char **argv) {
@@ -103,8 +97,7 @@ int main(int argc, char **argv) {
 
     if (run != 0) {
         if (rank == 0) {
-            if (human) print_time_human(end-start);
-            else print_time_csv(end-start, matrix.x, size, stencil7);
+            print_benchmark(end-start, matrix.x, size, stencil7, human);
         }
         // FIXME: CHECK FOR CORRECTNESS MANUALLY (Uncomment & Recompile)
         //MPI_Barrier(MPI_COMM_WORLD);
