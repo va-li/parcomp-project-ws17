@@ -7,9 +7,9 @@ void run_naive_stencil_7(struct pc_matrix *org_matrix, struct pc_matrix *tmp_mat
     copy_matrix(org_matrix, tmp_matrix);
 
     for (int pass = 0; pass < ITERATION_COUNT; ++pass) {
-        for (int i = 1; i < org_matrix->x - 1; ++i) {
+        for (int k = 1; k < org_matrix->z - 1; ++k) {
             for (int j = 1; j < org_matrix->y - 1; ++j) {
-                for (int k = 1; k < org_matrix->z - 1; ++k) {
+                for (int i = 1; i < org_matrix->x - 1; ++i) {
                     double tmp = ELEMENT(org_matrix->arr[k], line_length, i, j);
                     tmp += ELEMENT(org_matrix->arr[k], line_length, i, j + 1);
                     tmp += ELEMENT(org_matrix->arr[k], line_length, i, j - 1);
