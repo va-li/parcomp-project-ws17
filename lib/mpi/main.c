@@ -18,7 +18,7 @@ void print_time_csv(double seconds, int xyz, int cores, bool stencil7) {
     long sec = (long) seconds;
     long micro = (long) ((seconds - sec) * 1000000);
     micro += sec * 1000000;
-    xyz -= 2:
+    xyz -= 2;
     // XxYxZ,stencil_type,MPI,cores,microseconds
     printf("%dx%dx%d,%d,MPI,%d,%ld\n",xyz, xyz, xyz, (stencil7?7:27), cores, micro);
 }
