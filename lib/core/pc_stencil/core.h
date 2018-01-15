@@ -84,4 +84,21 @@ void print_matrix(FILE *fp, struct pc_matrix *matrix, bool include_boundary_vals
  */
 struct pc_matrix parse(char* filename);
 
+/**
+ * Reads a number from a string until the next character is ';' or '\n'
+ *
+ * @param it is the pointer to the iterator of the string
+ * @return the value that is calculated
+ */
+int int_from_string(char **it);
+
+/**
+ * Gets X;Y;Z from a string and saves them to the given pc_matrix
+ *
+ * @param matrix the struct where we save the values for x y and z
+ * @param string the string with the given values
+ * @return 0 if successful, 1 if there's an error
+ */
+int xyz_from_string(struct pc_matrix *matrix, char *string);
+
 #endif //PARCOMP_PROJECT_WS17_CORE_H
