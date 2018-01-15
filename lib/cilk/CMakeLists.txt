@@ -4,7 +4,7 @@ set(SOURCES pc_stencil/cilk_stencil.c pc_stencil/cilk_stencil.h)
 
 add_library(${PROJECT_NAME} ${SOURCES})
 
-target_compile_options(${PROJECT_NAME} PUBLIC -fcilkplus)
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcilkplus")
 
 target_link_libraries(${PROJECT_NAME} pc_stencil_core)
 

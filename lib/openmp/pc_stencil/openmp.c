@@ -13,6 +13,7 @@
  * @param id the id of the current thread
  */
 inline static void calculate_values(int *start, int *end, struct pc_matrix *matrix, int num_of_threads, int id) {
+    if (num_of_threads > pc_openmp_used_threads) pc_openmp_used_threads = num_of_threads;
     int m_val = matrix->z - 2;
     int chunk_size = m_val / num_of_threads;
     *start = id * chunk_size + 1;
@@ -24,21 +25,16 @@ inline static void calculate_values(int *start, int *end, struct pc_matrix *matr
 }
 
 void run_openmp_stencil_7(struct pc_matrix *matrix) {
-    double *first_buff_arr[NUM_THREADS];
-    double *updt_buff_arr[NUM_THREADS];
-    double *calc_buff_arr[NUM_THREADS];
-    int line_length = matrix->x;
-
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        first_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
-        updt_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
-        calc_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
-    }
-
-    omp_set_num_threads(NUM_THREADS);
+    omp_set_num_threads(pc_openmp_sugessted_threads);
 
 #pragma omp parallel
     {
+        double *first_buff = malloc(matrix->x * matrix->y * sizeof(double));
+        double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
+        double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
+
+        int line_length = matrix->x;
+
         int id = omp_get_thread_num();
 
         int start;
@@ -55,15 +51,15 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
 
                 // Copy boundary values
                 for (int i = 0; i < matrix->x; ++i) {
-                    ELEMENT(calc_buff_arr[id], line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
-                    ELEMENT(calc_buff_arr[id], line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i,
-                                                                                        matrix->y - 1);
+                    ELEMENT(calc_buff, line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
+                    ELEMENT(calc_buff, line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i,
+                                                                                matrix->y - 1);
                 }
 
                 for (int j = 0; j < matrix->y; ++j) {
-                    ELEMENT(calc_buff_arr[id], line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
-                    ELEMENT(calc_buff_arr[id], line_length, matrix->x - 1, j) = ELEMENT(curr, line_length,
-                                                                                        matrix->x - 1, j);
+                    ELEMENT(calc_buff, line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
+                    ELEMENT(calc_buff, line_length, matrix->x - 1, j) = ELEMENT(curr, line_length,
+                                                                                matrix->x - 1, j);
                 }
 
                 for (int j = 1; j < matrix->y - 1; ++j) {
@@ -77,64 +73,55 @@ void run_openmp_stencil_7(struct pc_matrix *matrix) {
                         tmp += ELEMENT(prev, line_length, i, j);
                         tmp += ELEMENT(futu, line_length, i, j);
                         tmp /= 7;
-                        ELEMENT(calc_buff_arr[id], line_length, i, j) = tmp;
+                        ELEMENT(calc_buff, line_length, i, j) = tmp;
                     }
                 }
 
                 if (k == start) {
-                    double *tmp = calc_buff_arr[id];
-                    calc_buff_arr[id] = first_buff_arr[id];
-                    first_buff_arr[id] = tmp;
+                    double *tmp = calc_buff;
+                    calc_buff = first_buff;
+                    first_buff = tmp;
                 } else if (k == start + 1) {
-                    double *tmp = calc_buff_arr[id];
-                    calc_buff_arr[id] = updt_buff_arr[id];
-                    updt_buff_arr[id] = tmp;
+                    double *tmp = calc_buff;
+                    calc_buff = updt_buff;
+                    updt_buff = tmp;
                 } else {
-                    double *tmp = calc_buff_arr[id];
-                    calc_buff_arr[id] = prev;
-                    matrix->arr[k - 1] = updt_buff_arr[id];
-                    updt_buff_arr[id] = tmp;
+                    double *tmp = calc_buff;
+                    calc_buff = prev;
+                    matrix->arr[k - 1] = updt_buff;
+                    updt_buff = tmp;
                 }
             }
 
 #pragma omp barrier
 
             double *tmp = matrix->arr[end - 1];
-            matrix->arr[end - 1] = updt_buff_arr[id];
-            updt_buff_arr[id] = tmp;
+            matrix->arr[end - 1] = updt_buff;
+            updt_buff = tmp;
 
             tmp = matrix->arr[start];
-            matrix->arr[start] = first_buff_arr[id];
-            first_buff_arr[id] = tmp;
+            matrix->arr[start] = first_buff;
+            first_buff = tmp;
 
 #pragma omp barrier
         }
+        free(first_buff);
+        free(updt_buff);
+        free(calc_buff);
     }
-
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        free(first_buff_arr[i]);
-        free(updt_buff_arr[i]);
-        free(calc_buff_arr[i]);
-    }
-
 }
 
 void run_openmp_stencil_27(struct pc_matrix *matrix) {
-    double *first_buff_arr[NUM_THREADS];
-    double *updt_buff_arr[NUM_THREADS];
-    double *calc_buff_arr[NUM_THREADS];
-    int line_length = matrix->x;
-
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        first_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
-        updt_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
-        calc_buff_arr[i] = malloc(matrix->x * matrix->y * sizeof(double));
-    }
-
-    omp_set_num_threads(NUM_THREADS);
+    omp_set_num_threads(pc_openmp_sugessted_threads);
 
 #pragma omp parallel
     {
+        double *first_buff = malloc(matrix->x * matrix->y * sizeof(double));
+        double *updt_buff = malloc(matrix->x * matrix->y * sizeof(double));
+        double *calc_buff = malloc(matrix->x * matrix->y * sizeof(double));
+
+        int line_length = matrix->x;
+
         int id = omp_get_thread_num();
 
         int start;
@@ -151,15 +138,15 @@ void run_openmp_stencil_27(struct pc_matrix *matrix) {
 
                 // Copy boundary values
                 for (int i = 0; i < matrix->x; ++i) {
-                    ELEMENT(calc_buff_arr[id], line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
-                    ELEMENT(calc_buff_arr[id], line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i,
-                                                                                        matrix->y - 1);
+                    ELEMENT(calc_buff, line_length, i, 0) = ELEMENT(curr, line_length, i, 0);
+                    ELEMENT(calc_buff, line_length, i, matrix->y - 1) = ELEMENT(curr, line_length, i,
+                                                                                matrix->y - 1);
                 }
 
                 for (int j = 0; j < matrix->y; ++j) {
-                    ELEMENT(calc_buff_arr[id], line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
-                    ELEMENT(calc_buff_arr[id], line_length, matrix->x - 1, j) = ELEMENT(curr, line_length,
-                                                                                        matrix->x - 1, j);
+                    ELEMENT(calc_buff, line_length, 0, j) = ELEMENT(curr, line_length, 0, j);
+                    ELEMENT(calc_buff, line_length, matrix->x - 1, j) = ELEMENT(curr, line_length,
+                                                                                matrix->x - 1, j);
                 }
 
                 for (int j = 1; j < matrix->y - 1; ++j) {
@@ -176,44 +163,41 @@ void run_openmp_stencil_27(struct pc_matrix *matrix) {
 
                         tmp /= 27;
 
-                        ELEMENT(calc_buff_arr[id], line_length, i, j) = tmp;
+                        ELEMENT(calc_buff, line_length, i, j) = tmp;
                     }
                 }
 
                 if (k == start) {
-                    double *tmp = calc_buff_arr[id];
-                    calc_buff_arr[id] = first_buff_arr[id];
-                    first_buff_arr[id] = tmp;
+                    double *tmp = calc_buff;
+                    calc_buff = first_buff;
+                    first_buff = tmp;
                 } else if (k == start + 1) {
-                    double *tmp = calc_buff_arr[id];
-                    calc_buff_arr[id] = updt_buff_arr[id];
-                    updt_buff_arr[id] = tmp;
+                    double *tmp = calc_buff;
+                    calc_buff = updt_buff;
+                    updt_buff = tmp;
                 } else {
-                    double *tmp = calc_buff_arr[id];
-                    calc_buff_arr[id] = prev;
-                    matrix->arr[k - 1] = updt_buff_arr[id];
-                    updt_buff_arr[id] = tmp;
+                    double *tmp = calc_buff;
+                    calc_buff = prev;
+                    matrix->arr[k - 1] = updt_buff;
+                    updt_buff = tmp;
                 }
             }
 
 #pragma omp barrier
 
             double *tmp = matrix->arr[end - 1];
-            matrix->arr[end - 1] = updt_buff_arr[id];
-            updt_buff_arr[id] = tmp;
+            matrix->arr[end - 1] = updt_buff;
+            updt_buff = tmp;
 
             tmp = matrix->arr[start];
-            matrix->arr[start] = first_buff_arr[id];
-            first_buff_arr[id] = tmp;
+            matrix->arr[start] = first_buff;
+            first_buff = tmp;
 
 #pragma omp barrier
         }
-    }
-
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        free(first_buff_arr[i]);
-        free(updt_buff_arr[i]);
-        free(calc_buff_arr[i]);
+        free(first_buff);
+        free(updt_buff);
+        free(calc_buff);
     }
 
 }

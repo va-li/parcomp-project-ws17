@@ -5,6 +5,8 @@
 #include "core.h"
 
 int parcomp_parser_error = 0;
+int pc_openmp_used_threads = 0;
+int pc_openmp_sugessted_threads = 4;
 
 void init_matrix(struct pc_matrix *matrix) {
     if (matrix == (void *) 0)

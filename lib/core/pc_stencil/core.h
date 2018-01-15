@@ -16,7 +16,9 @@ struct pc_matrix {
  */
 #define ITERATION_COUNT (100)
 
-#define NUM_THREADS (2)
+int pc_openmp_sugessted_threads;
+
+int pc_openmp_used_threads;
 
 #define ELEMENT(ARR, LINE_LENGTH, X, Y) ((ARR)[(LINE_LENGTH)*(Y) + (X)])
 

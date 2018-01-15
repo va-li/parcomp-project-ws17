@@ -20,7 +20,7 @@ void print_benchmark(double seconds, int xyz, int cores, bool stencil7, bool hum
 int main(int argc, char **argv) {
     int rank, size;
 
-    bool stencil7 = true, human = true;
+    bool stencil7 = true, human = true, print_out = false;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -28,13 +28,7 @@ int main(int argc, char **argv) {
 
     if (argc < 2 || argc > 3) {
         if (rank == 0) {
-            fprintf(stderr, "usage: ./pc_stencil_mpi filename [mode]\n");
-            fprintf(stderr, "\tonly the first character is checked for the mode\n");
-            fprintf(stderr, "Modes:\n");
-            fprintf(stderr, "\t\t 1 - Stencil7 csv\n");
-            fprintf(stderr, "\t\t 2 - Stencil27 csv\n");
-            fprintf(stderr, "\t\t 3 - Stencil7 human readable (default if empty)\n");
-            fprintf(stderr, "\t\t 4 - Stencil27 human readable\n");
+            print_common_usage();
         }
         run = 0;
     }
@@ -44,7 +38,8 @@ int main(int argc, char **argv) {
     if (run != 0) {
         matrix = parse_matrix_mpi(rank, size, argv[1]);
 
-        if (argc == 3) switch (argv[2][0]) {
+        if (argc == 3)
+            switch (argv[2][0]) {
                 case '1':
                     stencil7 = true;
                     human = false;
@@ -63,20 +58,17 @@ int main(int argc, char **argv) {
                     break;
                 default:
                     if (rank == 0) {
-                        fprintf(stderr, "usage: ./pc_stencil_mpi filename [mode]\n");
-                        fprintf(stderr, "\tonly the first character is checked for the mode\n");
-                        fprintf(stderr, "Modes:\n");
-                        fprintf(stderr, "\t\t 1 - Stencil7 csv\n");
-                        fprintf(stderr, "\t\t 2 - Stencil27 csv\n");
-                        fprintf(stderr, "\t\t 3 - Stencil7 human readable (default if empty)\n");
-                        fprintf(stderr, "\t\t 4 - Stencil27 human readable\n");
+                        print_common_usage();
                     }
                     run = 0;
             }
+        if (argv[2][1] == '+') {
+            print_out = true;
+        }
 
     }
 
-    if (matrix.x == -1){
+    if (matrix.x == -1) {
         if (rank == 0) {
             fprintf(stderr, "Matrix could not be parsed.\n");
         }
@@ -96,12 +88,12 @@ int main(int argc, char **argv) {
     }
 
     if (run != 0) {
-        if (rank == 0) {
-            print_benchmark(end-start, matrix.x, size, stencil7, human);
+        if (print_out) {
+            MPI_Barrier(MPI_COMM_WORLD);
+            print_matrix_mpi(rank, size, &matrix);
+        } else if (rank == 0) {
+            print_benchmark(end - start, matrix.x, size, stencil7, human);
         }
-        // FIXME: CHECK FOR CORRECTNESS MANUALLY (Uncomment & Recompile)
-        //MPI_Barrier(MPI_COMM_WORLD);
-        //print_matrix_mpi(rank, size, &matrix);
     }
 
     if (run != 0) {

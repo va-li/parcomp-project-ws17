@@ -23,4 +23,4 @@ endif()
 target_link_libraries(${PROJECT_NAME} pc_stencil_core)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR})
-add_custom_command(TARGET ${PROJECT_NAME} COMMAND cp -f pc_stencil_mpi .. && echo "Copied the new executable")
+add_custom_command(TARGET ${PROJECT_NAME} COMMAND mkdir ../../exes/ -p && cp -f ${PROJECT_NAME} ../../exes/${PROJECT_NAME} && echo "Copied the new executable")

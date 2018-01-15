@@ -3,14 +3,7 @@ project(parcomp-project-ws17 C)
 
 set(CMAKE_C_STANDARD 11)
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    message("OpenMP is supported")
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS} -fcilkplus -O3")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS} -lcilkrts")
-else()
-    message("OpenMP is not supported")
-endif()
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 
 add_subdirectory(util)
 add_subdirectory(lib)
