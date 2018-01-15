@@ -92,7 +92,6 @@ void run_stencil_7(struct pc_matrix *matrix) {
             }
 
             for (int j = 1; j < matrix->y - 1; ++j) {
-
                 for (int i = 1; i < matrix->x - 1; ++i) {
 
                     double tmp = ELEMENT(curr, line_length, i, j);
@@ -153,8 +152,8 @@ void run_stencil_27(struct pc_matrix *matrix) {
                 ELEMENT(calc_buff, line_length, matrix->x - 1, j) = ELEMENT(curr, line_length, matrix->x - 1, j);
             }
 
-            for (int i = 1; i < matrix->x - 1; ++i) {
-                for (int j = 1; j < matrix->y - 1; ++j) {
+            for (int j = 1; j < matrix->y - 1; ++j) {
+                for (int i = 1; i < matrix->x - 1; ++i) {
 
                     double tmp = 0;
                     for (int a = -1; a < 2; ++a) {
