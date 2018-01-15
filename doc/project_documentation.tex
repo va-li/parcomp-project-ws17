@@ -1,0 +1,29 @@
+\documentclass[]{article}
+
+%opening
+\title{Parallel Computing Project WS 2017\\TU Vienna}
+\author{Dardan Haxhimustafa (Matr.nr.: 01229164),\\Valentin Bauer (Matr.nr.: 01425252)}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Problem: 3-dimensional stencil}
+Given a 3-dimensional matrix 
+$$A = (a_{ijk}) \in [1,-1]^{n \times m \times l}$$
+and six boundary matrices
+$$B^{x \times y \times z}_{-x}, B^{x \times y \times z}_{+x},B^{x \times y \times z}_{-y},B^{x \times y \times z}_{+y},B^{x \times y \times z}_{-z},B^{x \times y \times z}_{+z}, (x=n+2, y=m+2, z=l+2),$$
+perform a 100-times iterated stencil computation on $A$ with a 7-point and 27-point stencil defined as
+$$s_7(A,i,j,k)=(a_{i,j,k} + a_{i-1,j,k} + a_{i+1,j,k} + \cdots a_{i,j,k+1}) \div 7,$$
+$$s_{27}(A,i,j,k)=(a_{i,j,k} + a_{i-1,j,k} + a_{i-1,j-1,k} + a_{i-1,j-1,k}\cdots a_{i+1,j+1,k+1}) \div 27.$$ We assume $n, m$ and $l$ to be divisible by the processor count $p$. 
+
+\textbf{TODO: Hypothesis, what are we trying to show?}
+
+\section{Sequential and parallel algorithms}
+\subsection{Sequential algorithm}
+Our sequential implementation first parses the matrix $A$ from an input file into several 1
+\end{document}
